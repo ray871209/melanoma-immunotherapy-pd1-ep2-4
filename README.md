@@ -41,6 +41,13 @@ This workflow describes the *historical research project*. The R code was used i
 
 The notebook files are **reorganised excerpts of the original code**, not rewritten replacements. Their internal exploratory snippets, overwritten variables, and dependencies on objects from previous R sessions have been preserved to avoid rewriting research history. They are for code review and portfolio demonstration; **do not assume each file will run independently**.
 
+## Explore the research
+
+- [Code navigation guide](research-notebook/README.md)
+- [Historical research highlights](docs/results-highlights.md)
+- [Editorial code-review notes](docs/code-review-notes.md)
+- [BASE-versus-quanTIseq decision](docs/base-selection.md)
+
 ## Principal conclusions
 
 Comparisons with and without immune composition/tumour purity adjustment highlighted the influence of sample composition on apparent treatment-associated expression changes. The study explored immune and inflammatory pathways associated with different treatment combinations. See the submitted thesis and appendix for the full results and limitations. These findings are from the original master's research, not a new re-analysis.

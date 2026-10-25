@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# -----------------------------------------------------------------------------
+# EDITORIAL NOTE
+# This file is a historical, interactive R research notebook excerpt.
+# Formatting and navigation comments have been cleaned without changing the
+# original analytical statements. Blocks may rely on prior session objects.
+# The complete original code is preserved in archive/original_annotated_code.R.
+# -----------------------------------------------------------------------------
+
 #start generate linear model with limma:
 cellfrac <- base %>% column_to_rownames("cell_type") %>% as.matrix()
 cellfrac <- t(cellfrac)
@@ -122,7 +130,7 @@ ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
 # p-value distribution to compare the same contrast with different model(model1, model2, model3, model4)
 # res_m1_AntiPD1_vs_Vehicle  res_m1_EPAT_vs_Vehicle     res_m1_Combo_vs_Vehicle res_m1_AntiPD1_vs_EPAT     res_m1_Combo_vs_EPAT       res_m1_Combo_vs_AntiPD1
 #all contrast group with model 1, if model 2 swap m1 to m2
-#Example for combination vs vehicle with model1 vs model 4 
+#Example for combination vs vehicle with model1 vs model 4
 df_p <- data.frame(
   pval = c(res_m1_Combo_vs_Vehicle, res_m4_Combo_vs_Vehicle),
   Model = rep(c("With purity", "Without purity and BASE"),c(length(res_m1_Combo_vs_Vehicle), length(res_m4_Combo_vs_Vehicle))))
@@ -172,8 +180,8 @@ alpha = 0.7,
 xlim_vals = c(-5, 5),
 ylim_vals = c(0, 6)) {
   res <- res_with
-  
-  
+
+
   # Base plot with background points
   p <- ggplot(res, aes(x = logFC, y = -log10(P.Value))) +
     geom_point(color = other_color, size = point_size, alpha = alpha) +
@@ -183,7 +191,7 @@ ylim_vals = c(0, 6)) {
     y = "-log10 P-value" ) +
     coord_cartesian(xlim = xlim_vals, ylim = ylim_vals, expand = FALSE) +
     theme_minimal(base_size = 13)
-  
+
   # Negative control (at back)
   p <- p + geom_point(
     data = subset(res, GeneID %in% neg_ids),
@@ -191,7 +199,7 @@ ylim_vals = c(0, 6)) {
     color = neg_color,
     size = point_size + 0.8,
     alpha = 0.9)
-  
+
   # Positive control (at front)
   p <- p + geom_point(
     data = subset(res, GeneID %in% anti_ids),
@@ -199,7 +207,7 @@ ylim_vals = c(0, 6)) {
     color = anti_color,
     size = point_size + 1.0,
     alpha = 1)
-  
+
   p}
 
 #combination vs vehicle from model 1 with positive and negative control genes previously generated
@@ -218,5 +226,3 @@ Comb_Veh<- rownames(sig_genes_up)
 
 # then use below code to get gene list
 cat(Comb_Veh, sep = "\n")
-
-

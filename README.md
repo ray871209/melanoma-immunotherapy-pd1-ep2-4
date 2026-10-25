@@ -15,9 +15,15 @@ How do combination immunotherapy and EP2/EP4 antagonism influence the tumour mic
 - Day 2 and day 5 collection; 39 original samples, 38 retained for downstream comparisons following QC.
 - Final gene-filtering criterion: CPM >= 0.5 in at least 3 samples. The thesis reports 14,917 genes retained.
 
+## Visual overview of the analysis
+
+![Historical RNA-seq research workflow](results/figures/research_workflow.svg)
+
+*Portfolio diagram drawn from the final oral presentation's documented workflow. This is a methodological illustration, not a new computation.*
+
 ## Final oral presentation highlights
 
-The final oral presentation provides a compact narrative of the research and identifies the original panels most useful for a portfolio. For now, the repository includes a **newly redrawn cohort diagram** based on the presented treatment-group counts, alongside the existing KEGG chart.
+The final oral presentation provides a compact narrative of the research and identifies original panels suitable for a portfolio. The repository currently displays a **redrawn method workflow**, a cohort diagram based on the presented treatment counts, and a KEGG FDR chart calculated from the published thesis table. The original RLE, PCA, BASE and volcano images have not yet been exported from the presentation.
 
 ![Mouse melanoma study design from the final presentation](results/figures/study_design.svg)
 

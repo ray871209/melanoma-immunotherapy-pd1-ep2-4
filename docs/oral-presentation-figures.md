@@ -5,7 +5,7 @@
 | PDF page / slide | Figure | Portfolio purpose | Status |
 | --- | --- | --- | --- |
 | 8 | Study cohort table | Compare sample counts by treatment and collection day | New SVG redrawn from the group's reported cells |
-| 9 | RNA-seq workflow | Show original methods and ordering | Described in README; original panel not yet extracted |
+| 9 | RNA-seq workflow | Show original methods and ordering | [Clean portfolio diagram](../results/figures/research_workflow.svg) redrawn from presentation methods; original slide not copied |
 | 10 | RLE panels | Compare raw, CPM and CPM + TMM | Original panel not yet extracted |
 | 11 | PCA panels | Show library-size and purity-related patterns | Original panel not yet extracted |
 | 12 | Tumour-purity chart and BASE heatmap | Show heterogeneity and estimated immune scores | Original panel not yet extracted |

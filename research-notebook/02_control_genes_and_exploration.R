@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# -----------------------------------------------------------------------------
+# EDITORIAL NOTE
+# This file is a historical, interactive R research notebook excerpt.
+# Formatting and navigation comments have been cleaned without changing the
+# original analytical statements. Blocks may rely on prior session objects.
+# The complete original code is preserved in archive/original_annotated_code.R.
+# -----------------------------------------------------------------------------
+
 ##Selecting Negative Control Genes
 housekeeping <- kv <- read.delim("HOUNKPE_HOUSEKEEPING_GENES.v2024.1.Mm.tsv", sep      = "\t", header   = FALSE,)
 
@@ -17,8 +25,8 @@ neg_control <- conversion[conversion$external_gene_name %in% housekeeping_genes,
 length(unique(neg_control$ensembl_gene_id))
 
 matrix_cpm_tmm <- as.matrix(cpm_data)
-#look for bottom 15% of gene in variance - 2238 genes 
-stable_gene <- names(sort(rowVars(matrix_cpm_tmm)))[1:2238] 
+#look for bottom 15% of gene in variance - 2238 genes
+stable_gene <- names(sort(rowVars(matrix_cpm_tmm)))[1:2238]
 new_neg_control <- intersect(neg_control$ensembl_gene_id, stable_gene)
 ctl <- rownames(matrix_update_cpm_tmm) %in% new_neg_control
 #test on RUVg where it accept negative control
@@ -44,7 +52,7 @@ cor(ruv_3$W[,2], update_tumor_purity)
 cor(ruv_3$W[,3], update_tumor_purity)
 
 #try bottom 20% and negative control intesect
-stable_gene_2 <- names(sort(rowVars(matrix_cpm_tmm)))[1:2984]  
+stable_gene_2 <- names(sort(rowVars(matrix_cpm_tmm)))[1:2984]
 new_neg_control_2 <- intersect(neg_control$ensembl_gene_id, stable_gene)
 ctl_2 <- rownames(matrix_update_cpm_tmm) %in% new_neg_control_2
 ruv_4 <- RUVg(matrix_update_cpm_tmm, ctl_2, k = 3, isLog = TRUE  )
@@ -81,7 +89,7 @@ info <- data.frame(treatment = group, day = batch_info, purity = tumor_purity, r
 
 se <- SummarizedExperiment( assays  = list(TMM_CPM = matrix_cpm_tmm), colData = DataFrame(info))
 
-## PRPS (supervised) 
+## PRPS (supervised)
 se <- createPrPsSupervised(
   se.obj = se,
   assay.name = "TMM_CPM",
@@ -119,11 +127,11 @@ W_factors   <- metadata(se_norm)$W
 
 ##EPAT positive control genes
 library(ggplot2)
-library(ggforce)   
+library(ggforce)
 library(reshape2)
 epat_positive_control <- c( "CCL19","CCL3","CCL5","CD14","CD38","CLEC5A","CRP","CSF2","CSF3","CXCL10", "CXCL11","CYR61","EDN1","EREG","FCAR","HIF3A","HLA-DRA","IFNG","IL1A","IL1B", "IL12A","IL12B","IL17A","IL18","IL1RL1","IL3","IL6","ITGAM","JAK2","KLK15", "KLK2","KLK3","LTB4R2_A","MMP9","NCAM1","NCR1","NOS2","PDE4C","PGK1","PLA2G1B", "PLA2G2A","PLA2G2D","PLA2G5","PRKAA2","PTGER3","PTGS2","SELE","STAT1","STAT2", "TLR4","TLR7","TNFSF10","TNFSF13B","VEGFC")
 
-# Map gene symbols to Ensembl 
+# Map gene symbols to Ensembl
 epat1 <- toupper(conversion$external_gene_name) %in% toupper(epat_positive_control)
 EPAT_ensembl  <- conversion$ensembl_gene_id[epat1]
 EPAT_gene_map <- conversion[epat1, ]
@@ -144,7 +152,7 @@ ggplot(EPAT_long, aes(x = Group, y = Expression, fill = Group)) +
   x = "Treatment Group", y = "Expression (Log2CPM)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
-# with page 1 page 2 
+# with page 1 page 2
 ggplot(EPAT_long, aes(x = Group, y = Expression, fill = Group)) +
   geom_boxplot(outlier.size = 0.5) +
   ggforce::facet_wrap_paginate(~ Gene, scales = "free_y", ncol = 2, nrow = 4, page = 1) +
@@ -182,7 +190,7 @@ ggplot(antiPD1_long, aes(x = Group, y = Expression, fill = Group)) +
   x = "Treatment Group", y = "Expression (Log2CPM)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
-# with page 1 page 2 
+# with page 1 page 2
 ggplot(antiPD1_long, aes(x = Group, y = Expression, fill = Group)) +
   geom_boxplot(outlier.size = 0.5) +
   ggforce::facet_wrap_paginate(~ Gene, scales = "free_y", ncol = 2, nrow = 4, page = 4) +
@@ -281,7 +289,7 @@ ggplot(pval_counts_epat, aes(x = Bin, y = Count)) +
   theme_minimal(base_size = 15) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-## Anti-PD-1 from literature 
+## Anti-PD-1 from literature
 antiPD1_upregulated <- c("IFNG","TNF","IL6","IL1B","IFNA2","IFNB1","STAT1","NFKBIA","IKBKB","IKBKG","RELA","CHUK","IL12A","IL12B","IL21","IL27","IL18","IL2","TLR4","TLR7","IFNAR1","IRF3","IRF7","CXCL12","CD44","CD3","NOS2","CSF2","CSF3","TNFSF10","EBI3","SPI1","ITK")
 
 antiPD1_positive_genes <- c( "Cd44","Chuk","Cxcl12","Ebi3","Ifnar1","Ifng","Ikbkb","Ikbkg","Il12b","Il18","Il1b","Il2","Il27","Il6","Irf3","Irf7","Itk","Nfkbia","Nos2","Rela","Spi1","Stat1","Tlr4","Tlr7","Tnf","Tnfsf10","Cd28","Irf1","Myd88","Tbx21","Tlr3","Cxcl10")
@@ -327,7 +335,7 @@ for (page_num in 1:4) {
 # p-values for anti-PD-1
 a_pvals <- c(0.055013832,0.838256486,0.487668353,0.391267279,0.177909595,0.307434166,0.012763008,0.094166375,0.540291375,0.653378911,0.111346887,0.270344141,0.016010991,0.653378911,0.016010991,0.347745599,0.007963489,0.347745599,0.094166375,0.079179350,0.024744672,0.177909595,0.019964453,0.775051374,0.024744672,0.002880485,0.055013832,0.130911128,0.775051374,0.967435545,0.177909595,0.030486157)
 
-## EPAT from literature 
+## EPAT from literature
 upregulated_EPAT <- c("IFNG","IFNA2","IFNB1","IFNAR1","IRF1","IRF3","IRF7","STAT1","STAT4","JAK1","JAK2","TLR4","TLR7","TLR9","TNF","IL12A","IL12B","IL1B","IL2","IL18","IL21","CD3D","CD3E","CD3G","CD3Z","CIITA","PML","PARP9","RELA","CHUK","IKBKB","ITK","TICAM1", "IL27","TMEM173","MAP3K8","IFIH1","MAVS","MYD88")
 
 epat2 <- tolower(conversion$external_gene_name) %in% tolower(upregulated_EPAT)
@@ -351,7 +359,7 @@ for (g in unique(long_data$Gene)) {
 }
 print(results[results$P_value < 0.05, ])
 
-# EPAT p-values 
+# EPAT p-values
 e_pvals <- c(0.08920955,0.05242590,0.07525601,0.91179718,0.10512243,0.02323064,0.39304813,0.16549395,0.91179718,0.06301284,0.14314014,0.07525601,0.57874169,0.14314014,0.12300548,0.52884886,0.10512243,0.05242590,0.48125095,0.31499924,0.79593626,0.73936435,0.04325705,0.05242590,0.97051246,0.85342831,0.12300548,0.91179718,0.35268137,0.91179718,0.31499924,0.03546299)
 
 #KS test on p-value
@@ -364,4 +372,3 @@ ks_apd1
 sig_anti_pd1; sig_anti_pd1_total
 sig_epat; sig_epat_total
 head(sig_results)
-

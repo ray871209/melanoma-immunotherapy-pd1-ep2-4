@@ -25,7 +25,8 @@ fit_script_models <- function(log_cpm, metadata, base_scores) {
       !identical(rownames(base_scores), samples)) {
     stop("BASE matrix must be numeric and have ordered sample IDs as row names.")
   }
-  if (anyNA(log_cpm) || anyNA(metadata[, required]) || anyNA(base_scores)) {
+  if (nrow(base_scores) != ncol(log_cpm) || ncol(base_scores) < 1L) stop("Invalid BASE dimensions.")
+  if (anyNA(log_cpm) || any(!is.finite(log_cpm)) || anyNA(metadata[, required]) || anyNA(base_scores)) {
     stop("Missing values are not supported.")
   }
   treatment <- factor(as.character(metadata$treatment),
@@ -40,11 +41,11 @@ fit_script_models <- function(log_cpm, metadata, base_scores) {
   names(cell) <- make.names(paste0("BASE_", names(cell)), unique = TRUE)
   cov <- data.frame(treatment = treatment, purity = purity, cell, check.names = FALSE)
 
-  spec <- list(
-    script_model_1_BASE_purity = ~ 0 + treatment + .,
-    script_model_2_BASE = ~ 0 + treatment + .,
-    script_model_3_purity = ~ 0 + treatment + purity,
-    script_model_4_treatment = ~ 0 + treatment
+  model_covariates <- list(
+    script_model_1_BASE_purity = c("purity", names(cell)),
+    script_model_2_BASE = names(cell),
+    script_model_3_purity = "purity",
+    script_model_4_treatment = character(0)
   )
   contrast_defs <- c(
     AntiPD1_vs_Vehicle = "treatmentAntiPD1 - treatmentVehicle",
@@ -55,16 +56,8 @@ fit_script_models <- function(log_cpm, metadata, base_scores) {
     Combo_vs_AntiPD1 = "treatmentCombo - treatmentAntiPD1"
   )
   result <- list()
-  for (nm in names(spec)) {
-    if (nm == "script_model_1_BASE_purity") {
-      d <- cov
-    } else if (nm == "script_model_2_BASE") {
-      d <- cov[, setdiff(names(cov), "purity"), drop = FALSE]
-    } else if (nm == "script_model_3_purity") {
-      d <- cov[, c("treatment", "purity"), drop = FALSE]
-    } else {
-      d <- cov[, "treatment", drop = FALSE]
-    }
+  for (nm in names(model_covariates)) {
+    d <- cov[, c("treatment", model_covariates[[nm]]), drop = FALSE]
     design <- stats::model.matrix(~ 0 + ., data = d)
     if (qr(design)$rank < ncol(design)) {
       stop("Rank-deficient design for ", nm,

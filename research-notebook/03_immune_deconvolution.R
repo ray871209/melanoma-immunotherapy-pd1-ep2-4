@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# -----------------------------------------------------------------------------
+# EDITORIAL NOTE
+# This file is a historical, interactive R research notebook excerpt.
+# Formatting and navigation comments have been cleaned without changing the
+# original analytical statements. Blocks may rely on prior session objects.
+# The complete original code is preserved in archive/original_annotated_code.R.
+# -----------------------------------------------------------------------------
+
 #immune composition
 #install.packages("remotes")
 #remotes::install_github("omnideconv/immunedeconv")
@@ -14,13 +22,13 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggExtra)
-#data must be on non-log scale 
+#data must be on non-log scale
 deconv_data <- 2^human_gene
 #the below three method uses mouse data
 quantiseq <- deconvolute(deconv_data, "quantiseq")
 xcell <- deconvolute(deconv_data, "xcell")
 epic <- deconvolute(deconv_data, "epic")
-#correlation uncharacterized cell from quatiseq and tumour purity 
+#correlation uncharacterized cell from quatiseq and tumour purity
 uncharacterized <- quantiseq[quantiseq$cell_type == "uncharacterized cell", -1]
 # make it numeric vector
 uncharacterized <- as.numeric(uncharacterized)
@@ -42,7 +50,7 @@ gene_map <- getBM(attributes = c("ensembl_gene_id", "mgi_symbol"), mart = mart)
 
 
 cpm_data_ <- left_join(cpm_data, gene_map, by = "ensembl_gene_id")
-deconv_data_mouse <- 2^( cpm_data_mgi)  
+deconv_data_mouse <- 2^( cpm_data_mgi)
 
 # run mmcp_counter
 mmcp_counter <- deconvolute_mouse(deconv_data_mouse, method = "mmcp_counter")
@@ -52,9 +60,9 @@ base <- deconvolute_mouse(deconv_data_mouse, method = "base")
 # PCA on BASE
 pca_result <- prcomp(t(base), scale. = TRUE)
 pca_data <- as.data.frame(pca_result$x)
-pca_data$Group  <- group          
+pca_data$Group  <- group
 #day 2 and day 5
-pca_data$Day    <- batch_info 
+pca_data$Day    <- batch_info
 pca_data$Sample <- colnames(base)
 
 # PC1 and PC2
@@ -79,8 +87,8 @@ mat <- base %>% column_to_rownames("cell_type") %>% as.matrix()
 ann_col <- data.frame(Group = group, row.names = colnames(mat))
 
 pheatmap(
-  mat,     
-  scale = "row",      
+  mat,
+  scale = "row",
   annotation_col = ann_col,
   show_colnames = TRUE,
   show_rownames = TRUE,
@@ -90,4 +98,3 @@ pheatmap(
   clustering_method = "average",
   border_color = NA,
   main = "Immune Cell Composition (BASE)")
-

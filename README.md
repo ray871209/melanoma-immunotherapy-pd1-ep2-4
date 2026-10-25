@@ -1,63 +1,52 @@
-# Melanoma immunotherapy bulk RNA-seq analysis
+# Exploring Differential Gene Expression in Melanoma Under Combined Checkpoint Inhibitor and Anti-inflammatory Treatment
 
-**Research project:** Exploring Differential Gene Expression in Melanoma Under Combined Checkpoint Inhibitor and Anti-inflammatory Treatment  
-**Author:** Tzer Ray Su | Master of Bioinformatics, University of Melbourne (2025)
+**Master of Bioinformatics research project | University of Melbourne | 2025**
 
-## Overview
+An archived and organised collection of R code and methods from a master's research project investigating gene-expression changes following anti-PD-1, EP2/EP4 antagonist (EPAT), and combination treatments in a mouse melanoma model.
 
-This repository is being curated from the original master's research thesis, supplementary figures/tables, and an annotated R analysis script. It examines bulk RNA-seq expression profiles from a mouse melanoma model receiving:
+## Research question
 
-- Vehicle control
-- Anti-PD-1
-- EP2/EP4 antagonists (EPAT)
-- Anti-PD-1 + EPAT (combination)
+How do combination immunotherapy and EP2/EP4 antagonism influence the tumour microenvironment and differential gene expression, and how does accounting for estimated immune composition and tumour purity affect the results?
 
-The study examines treatment-associated differential gene expression, with a focus on how estimated tumour purity and immune-cell composition affect downstream analysis.
+## Data and study design
 
-**Status: work in progress.** The original annotated analysis script contains exploratory attempts, intermediate R-session variables, and some inconsistent code. The curated, independently runnable pipeline is **not yet validated**. Please do not interpret the present repository as a fully reproducible or independently re-executed analysis.
+- Public bulk RNA-seq dataset: [GSE160788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160788) / [PRJNA674507](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA674507).
+- Four conditions: Vehicle, anti-PD-1, EPAT, and anti-PD-1 + EPAT.
+- Day 2 and day 5 collection; 39 original samples, 38 retained for downstream comparisons following QC.
+- Final gene-filtering criterion: CPM >= 0.5 in at least 3 samples. The thesis reports 14,917 genes retained.
 
-## Dataset
+## Research workflow
 
-The thesis describes 39 samples across day 2 and day 5 following treatment (19 and 20 samples, respectively), with 39,179 genes in the initial raw count matrix.
+1. Raw count review, low-expression filtering, and TMM-normalised log2-CPM.
+2. Quality control and sample exploration using PCA and RLE plots.
+3. ESTIMATE tumour purity after mouse-to-human ortholog conversion.
+4. Exploration of immune deconvolution methods; **BASE** selected for the principal final adjustment approach, rather than quanTIseq.
+5. Positive/negative control gene checks.
+6. Differential expression with limma, contrasting treatment effects under different combinations of BASE and tumour purity covariates.
+7. KEGG pathway enrichment interpretation.
 
-- GEO: [GSE160788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160788)
-- BioProject: [PRJNA674507](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA674507)
+This workflow describes the *historical research project*. The R code was used interactively and has not been packaged as a fully executable automated pipeline.
 
-Original data are not redistributed in this repository. The thesis reports filtering the count matrix to **14,917 genes**, using **CPM ≥ 0.5 in at least 3 samples**. This is the confirmed final filtering criterion; an earlier exploratory script block instead used CPM ≥ 1.
+## Code organisation
 
-## Thesis analysis outline
+| Path | What it contains |
+| --- | --- |
+| [research-notebook/01_preprocessing_qc_estimate.R](research-notebook/01_preprocessing_qc_estimate.R) | Original sections on preprocessing, QC, and ESTIMATE |
+| [research-notebook/02_control_genes_and_exploration.R](research-notebook/02_control_genes_and_exploration.R) | Original sections on control genes and explorations (including RUV attempts) |
+| [research-notebook/03_immune_deconvolution.R](research-notebook/03_immune_deconvolution.R) | Original section comparing deconvolution approaches |
+| [research-notebook/04_limma_and_visualisation.R](research-notebook/04_limma_and_visualisation.R) | Original sections on limma models, volcano plots, and statistical visualisation |
+| [archive/original_annotated_code.R](archive/original_annotated_code.R) | Complete original annotated R file, preserved as submitted |
+| [docs/base-selection.md](docs/base-selection.md) | Notes on the selection of BASE over quanTIseq |
+| [docs/methodology.md](docs/methodology.md) | Methodological notes |
 
-1. Import count matrix and annotate treatment/sample groups.
-2. Filter low-expression genes and perform edgeR TMM normalisation; compute log2-CPM.
-3. Check sample structure and relative expression distributions using PCA and RLE plots.
-4. Estimate tumour purity with ESTIMATE after mouse-to-human ortholog mapping.
-5. Estimate immune composition using immune deconvolution (including BASE).
-6. Review positive-control and housekeeping-gene behaviour.
-7. Fit treatment contrasts using limma under alternative covariate-adjustment models.
-8. Interpret differentially expressed genes with KEGG enrichment analysis.
+The notebook files are **reorganised excerpts of the original code**, not rewritten replacements. Their internal exploratory snippets, overwritten variables, and dependencies on objects from previous R sessions have been preserved to avoid rewriting research history. They are for code review and portfolio demonstration; **do not assume each file will run independently**.
 
-See [methods notes](docs/methodology.md) and [reproducibility checklist](docs/reproducibility.md).
+## Principal conclusions
 
-## Planned repository layout
+Comparisons with and without immune composition/tumour purity adjustment highlighted the influence of sample composition on apparent treatment-associated expression changes. The study explored immune and inflammatory pathways associated with different treatment combinations. See the submitted thesis and appendix for the full results and limitations. These findings are from the original master's research, not a new re-analysis.
 
-```text
-scripts/           Curated final-analysis stages (not yet validated)
-exploratory/       Trial methods not selected for the final analysis
-docs/              Methodology, reproducibility, decisions and limitations
-results/figures/   Selected thesis figures (only when permission/attribution is clear)
-```
+## Reproducibility and attribution
 
-## Important scientific distinctions
+The original analysis relied on an interactive RStudio environment. This repository presents and organises the existing work, but does not claim a verified, one-command reproduction of all figures or statistics. Public datasets are linked rather than redistributed, and the original study and software authors should be cited when reusing the work.
 
-- Tumour purity is an **estimate**, not a directly measured tumour-cell fraction.
-- Immune deconvolution reflects algorithm-specific estimates or scores; different methods need not be directly comparable.
-- Differences between covariate-adjusted and unadjusted models should not automatically be interpreted as causal.
-- Scripts will be revised against the thesis, but any modifications affecting statistical outputs will be documented instead of silently changing historical findings.
-
-## Data access and reproducibility
-
-To reproduce the published study analysis, download the referenced expression dataset from GEO and consult the original study's metadata. The exact sample-to-treatment correspondence and exclusion criteria must be verified from source files before the curated scripts are described as runnable end-to-end.
-
-## Attribution
-
-This is a portfolio-oriented reconstruction of the author's 2025 master's research project using previously published transcriptomic data. The underlying dataset and external software remain subject to their original citations and licences. A software licence has **not yet been selected**.
+The complete thesis and supervisor meeting slides are not automatically republished here. Please contact the author for further methodological context. No software licence has been selected.

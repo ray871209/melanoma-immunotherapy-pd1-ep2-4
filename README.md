@@ -15,6 +15,22 @@ How do combination immunotherapy and EP2/EP4 antagonism influence the tumour mic
 - Day 2 and day 5 collection; 39 original samples, 38 retained for downstream comparisons following QC.
 - Final gene-filtering criterion: CPM >= 0.5 in at least 3 samples. The thesis reports 14,917 genes retained.
 
+## Featured historical results
+
+![KEGG pathway FDR summary from thesis Table 6](results/figures/kegg_combination_vs_vehicle.svg)
+
+*Visual summary newly redrawn from the thesis Table 6, not a new enrichment analysis. These seven pathways passed FDR < 0.05 in the combination vs vehicle comparison under the BASE + tumour-purity-adjusted model.*
+
+The final reported workflow retained **14,917 genes** after filtering (CPM >= 0.5 in at least three samples) and included **38 samples** after removal of the QC outlier. For the combination vs vehicle contrast, the thesis recorded **682 differentially expressed genes** meeting |log2FC| > 0.585 and nominal p < 0.05 in the BASE + purity model, followed by DAVID/KEGG overrepresentation analysis. The thesis reports broader signals without adjustment; this is an observation, not proof that all unadjusted genes are false positives.
+
+**Other original figures:** The submitted thesis includes sample PCA/QC, immune deconvolution plots and volcano comparisons. The original PDF panels are not yet separately hosted in this repository; see [figure index](docs/figure-index.md). We do not substitute invented plots for them.
+
+## Selected software and methods
+
+**R / Bioconductor:** edgeR (TMM / CPM), EDASeq (RLE), limma (differential expression), biomaRt (gene mapping), ESTIMATE (tumour purity), immunedeconv (BASE and alternative deconvolution methods), ggplot2 (figures). **Pathway interpretation:** DAVID Functional Annotation Tool and KEGG. This is a summary of tools used in the research, not a claim that every package in the historical R session was part of the final method.
+
+**Provenance:** Analysis of publicly available data from [GSE160788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160788), as reported in the 2025 master's thesis. The experimental source is Pelly et al. (2021); cite the original study and software publications if reusing this analysis.
+
 ## Research workflow
 
 1. Raw count review, low-expression filtering, and TMM-normalised log2-CPM.

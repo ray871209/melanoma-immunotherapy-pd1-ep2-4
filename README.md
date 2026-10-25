@@ -15,6 +15,25 @@ How do combination immunotherapy and EP2/EP4 antagonism influence the tumour mic
 - Day 2 and day 5 collection; 39 original samples, 38 retained for downstream comparisons following QC.
 - Final gene-filtering criterion: CPM >= 0.5 in at least 3 samples. The thesis reports 14,917 genes retained.
 
+## Final oral presentation highlights
+
+The final oral presentation provides a compact narrative of the research and identifies the original panels most useful for a portfolio. For now, the repository includes a **newly redrawn cohort diagram** based on the presented treatment-group counts, alongside the existing KEGG chart.
+
+![Mouse melanoma study design from the final presentation](results/figures/study_design.svg)
+
+*Final analysis cohort: 38 mice across four treatments. Redrawn from final oral presentation slide 8. The slide's displayed day-column total conflicts with the sum of its group rows; the diagram uses the group-level counts and flags that discrepancy in the [presentation notes](docs/oral-presentation-figures.md).*
+
+**Original research figure panels selected from the presentation:**
+
+- **Slide 10 — RLE:** Raw, CPM-only and CPM+TMM expression distributions.
+- **Slide 11 — PCA:** Treatment, library size and tumour-purity patterns before and after normalisation.
+- **Slide 12 — Tumour microenvironment:** ESTIMATE purity and BASE immune-cell enrichment heatmap.
+- **Slide 14 — Differential expression:** Four volcano panels comparing Model 4 (unadjusted) with Model 1 (BASE + purity), including positive and negative controls.
+- **Slide 15 — P-value distributions:** Adjusted vs unadjusted combination-versus-vehicle contrast.
+- **Slide 16 — Pathway enrichment:** Reported DAVID/KEGG table and comparative pathway-effect plot.
+
+These original panels are **documented but have not yet been extracted as separate image files**. We have not substituted synthetic versions for the original PCA, RLE, BASE or volcano plots. See [presentation figure notes](docs/oral-presentation-figures.md).
+
 ## Featured historical results
 
 ![KEGG pathway FDR summary from thesis Table 6](results/figures/kegg_combination_vs_vehicle.svg)

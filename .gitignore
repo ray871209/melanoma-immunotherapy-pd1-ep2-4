@@ -1,0 +1,39 @@
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Renviron
+*.Rcheck/
+renv/library/
+renv/staging/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Raw/intermediate data
+data/raw/
+data/intermediate/
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bai
+*.sam
+*.cram
+*.rds
+*.Rds
+*.RData
+*.h5
+*.h5ad
+
+# Credentials and logs
+.env
+.env.*
+*.log
+
+# Outputs kept local until reviewed
+results/tables/
+results/intermediate/

@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# -----------------------------------------------------------------------------
+# EDITORIAL NOTE
+# This file is a historical, interactive R research notebook excerpt.
+# Formatting and navigation comments have been cleaned without changing the
+# original analytical statements. Blocks may rely on prior session objects.
+# The complete original code is preserved in archive/original_annotated_code.R.
+# -----------------------------------------------------------------------------
+
 #most of my analysis follow https://htmlpreview.github.io/?https://github.com/RMolania/TCGA_PanCancer_UnwantedVariation/blob/master/Vigettes/TCGA_READ_RNAseq_Vignette.html#lowly-expressed-genes, which is the workflow from Raymar
 
 raw <- read.table("GSE160788_SZ14_raw_count_matrix.txt", header = TRUE, sep = "")
@@ -17,8 +25,8 @@ library(reshape2)
 #make sample into different group
 group <- c("EPAT", "Vehicle", "Anti-PD-1+EPAT", "Vehicle", "Vehicle","EPAT", "Anti-PD-1+EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle","Anti-PD-1", "EPAT", "Anti-PD-1", "Anti-PD-1+EPAT", "Vehicle","Anti-PD-1", "EPAT", "Anti-PD-1", "EPAT", "Anti-PD-1+EPAT","Vehicle", "Vehicle", "Anti-PD-1", "Anti-PD-1", "Anti-PD-1","Anti-PD-1", "Anti-PD-1", "Vehicle", "EPAT", "Anti-PD-1+EPAT","Vehicle", "EPAT", "Anti-PD-1+EPAT", "Anti-PD-1+EPAT","Anti-PD-1+EPAT", "EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle")
 
-#Calculate library size for each sample 
-library_sizes <- colSums(raw) 
+#Calculate library size for each sample
+library_sizes <- colSums(raw)
 
 summary(library_sizes)
 
@@ -39,17 +47,17 @@ tmm <- calcNormFactors(dge, method = "TMM")
 
 #CPM conversion (to log2 format):
 # becomes CPM+TMM
-cpm_data <- cpm(tmm, log = TRUE) 
+cpm_data <- cpm(tmm, log = TRUE)
 
 #CPM without TMM
 cpm_only <- cpm(filtered, log = TRUE) #CPM normalization only
 
-#PCA: 
+#PCA:
 #PCA after CPM-TMM
 # Perform PCA on normalized data
 pca_result <- prcomp(t(cpm_data), scale. = TRUE)
 pca_data <- as.data.frame(pca_result$x)
-pca_data$Group <- group  
+pca_data$Group <- group
 #Calculate the proportion for PC1 and PC2
 pca_var <- summary(pca_result)$importance[2, ]
 #make it pecentage
@@ -68,7 +76,7 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = LibrarySize)) +geom_point(size = 
 
 #Find Tumor purity:
 #Convert Mouse Ensembl IDs to Gene Symbols(required for tumor purity)
-library(biomaRt) 
+library(biomaRt)
 library(dplyr)
 mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 conversion <- getBM( attributes = c("ensembl_gene_id", "external_gene_name"), filters = "ensembl_gene_id", values = rownames(filtered), mart = mart )
@@ -142,7 +150,7 @@ seq<- newSeqExpressionSet(mat, phenoData = new("AnnotatedDataFrame", data = pd))
 # Generate RLE plot
 plotRLE(seq, outline = FALSE, col = box_colors, main = "RLE Plot labaled by Treatment group", xlab    = "Sample", ylab = "Relative Log Expression", ylim = c(-0.35, 0.35))legend("topright", legend = names(color), fill   = color, title  = "Treatment Group", cex    = 0.8)
 
-# Calculate the median 
+# Calculate the median
 gene_medians <- apply(original, 1, median)
 
 ##PCA before normalization
@@ -151,11 +159,11 @@ pca_result <- prcomp(t(log_counts), scale. = TRUE)
 pca_data <- as.data.frame(pca_result$x)
 pca_data$Group <- group  # Factor/Group variable
 
-pca_var <- summary(pca_result)$importance[2, ]  
+pca_var <- summary(pca_result)$importance[2, ]
 # PC1 in %
-pc1_var <- round(pca_var[1] * 100, 1)          
+pc1_var <- round(pca_var[1] * 100, 1)
 # PC2 in %
-pc2_var <- round(pca_var[2] * 100, 1)          
+pc2_var <- round(pca_var[2] * 100, 1)
 pca <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Group)) + geom_point(size = 3) + labs( title = "PCA - labeled by treatment group", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)") ) + theme_minimal() + theme( legend.title = element_text(size = 10), legend.text  = element_text(size = 8))
 pca_marginal <- ggMarginal( pca, type = "density", groupColour = TRUE, groupFill = TRUE)
 print(pca_marginal)
@@ -185,7 +193,7 @@ pca_df <- data.frame(
 )
 
 
-#PCA plot include variance 
+#PCA plot include variance
 ggplot(pca_df, aes(x = PC1, y = PC2, color = TumorPurity)) +geom_point(size = 3) +labs(title = "PCA Plot - labeled by tumor purity", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Tumor Purity") + scale_color_gradient(low = "blue", high = "red") + theme_minimal()
 
 
@@ -203,7 +211,7 @@ p <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Group)) + geom_point(size = 
 ###PCA after CPM-TMM
 pca_result <- prcomp(t(cpm_data), scale. = TRUE)
 pca_data <- as.data.frame(pca_result$x)
-pca_data$Group <- group  
+pca_data$Group <- group
 pca_var <- summary(pca_result)$importance[2, ]
 pc1_var <- round(pca_var[1] * 100, 1)
 pc2_var <- round(pca_var[2] * 100, 1)
@@ -216,4 +224,3 @@ pca_data$LibrarySize <- library_sizes
 ggplot(pca_data, aes(x = PC1, y = PC2, color = LibrarySize)) + geom_point(size = 3) + scale_color_gradientn(colors = c("blue", "yellow", "red"), limits = c(min(library_sizes), max(library_sizes))) + labs(title = "PCA - labaled by Library Size", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Library Size") + theme_minimal()
 
 #PCA raw count-CPM-TMM labaled by tumor purityggplot(pca_df, aes(x = PC1, y = PC2, color = TumorPurity)) + geom_point(size = 3) + labs(title = "PCA - labaled by  Tumor Purity", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Tumor Purity") + scale_color_gradient(low = "blue", high = "red") + theme_minimal()
-

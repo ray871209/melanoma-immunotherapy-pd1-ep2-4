@@ -17,6 +17,8 @@ Start with the project [README](../README.md), then study the code files sequent
 
 - Split the long annotated source by subject.
 - Standardised trailing whitespace and excessive blank lines.
+- Reworded unclear comments in English, separated provenance notes, and wrapped long gene-symbol lists and treatment vectors for GitHub readability.
+- Wrapped a few long narrative comments while preserving their meaning.
 - Added explanatory source-provenance notices.
 - Preserved original analysis commands and trial methods.
 
@@ -28,3 +30,7 @@ Start with the project [README](../README.md), then study the code files sequent
 - Reported thesis results.
 
 **Historical clarification:** the final gene filter was CPM >= 0.5 in at least 3 samples, even though one early exploratory section used CPM >= 1. The final immune adjustment used BASE as the selected method; quanTIseq was an investigated alternative. See [editorial notes](../docs/code-review-notes.md).
+
+## Editing and validation status
+
+This portfolio clean-up is **editorial, not a rerun** of the RNA-seq experiment. Source code was not executed against original input data, and historical dependencies/possible errors remain. A faithful original annotated file is retained in the archive for comparison. Comments should not be treated as evidence that each snippet is standalone or independently reproduced.

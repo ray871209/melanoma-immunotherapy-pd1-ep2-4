@@ -56,6 +56,8 @@ The final reported workflow retained **14,917 genes** after filtering (CPM >= 0.
 
 **Provenance:** Analysis of publicly available data from [GSE160788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160788), as reported in the 2025 master's thesis. The experimental source is Pelly et al. (2021); cite the original study and software publications if reusing this analysis.
 
+**Recorded R environment:** The author also retained an R 4.4.1 session snapshot with versions of key packages (including edgeR, limma, immunedeconv and biomaRt). See [software and dependencies](docs/software-and-dependencies.md). This is an environment record, not a fully reproducible lockfile.
+
 ## Research workflow
 
 1. Raw count review, low-expression filtering, and TMM-normalised log2-CPM.

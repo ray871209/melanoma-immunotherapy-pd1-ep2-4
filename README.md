@@ -48,6 +48,8 @@ The author has now uploaded original research and appendix PNGs. They are indexe
 
 The final reported workflow retained **14,917 genes** after filtering (CPM >= 0.5 in at least three samples) and included **38 samples** after removal of the QC outlier. For the combination vs vehicle contrast, the thesis recorded **682 differentially expressed genes** meeting |log2FC| > 0.585 and nominal p < 0.05 in the BASE + purity model, followed by DAVID/KEGG overrepresentation analysis. The thesis reports broader signals without adjustment; this is an observation, not proof that all unadjusted genes are false positives.
 
+**KEGG source records:** [Original enrichment tables and interpretation](docs/pathway-enrichment-kegg.md), including a [tidy KEGG pathway CSV](results/kegg-combo-vs-vehicle-normalized.csv) transcribed from the author's historical export (not a newly run analysis).
+
 **Other original figures:** Original uploaded research images, including appendix supplementary outputs, are now available in the [66-image gallery](docs/original-figures-gallery.md). Original pixels are preserved; filenames are now stable sequential archive identifiers pending panel-by-panel caption verification.
 
 ## Selected software and methods
@@ -113,6 +115,7 @@ The images below are unmodified author-supplied research files. Their sequential
 - [Research archive audit: original scripts, overlaps and supporting spreadsheets](docs/research-archive-audit.md)
 - [Pre-publication safety check and remaining review requirements](docs/pre-publication-audit.md)
 - [Historical research highlights](docs/results-highlights.md)
+- [Pathway enrichment and original KEGG result tables](docs/pathway-enrichment-kegg.md)
 - [Editorial code-review notes](docs/code-review-notes.md)
 - [All 66 original research and appendix images](docs/original-figures-gallery.md)
 - [Supplementary volcano-plot guide and figure provenance](docs/supplementary-volcano-gallery.md)

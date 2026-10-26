@@ -84,6 +84,8 @@ This workflow describes the *historical research project*. The R code was used i
 
 The notebook files are **reorganised excerpts of the original code**, not rewritten replacements. Their internal exploratory snippets, overwritten variables, and dependencies on objects from previous R sessions have been preserved to avoid rewriting research history. They are for code review and portfolio demonstration; **do not assume each file will run independently**.
 
+**Additional original source files:** Nine independent R / R Markdown scripts from the completed study are preserved in the [standalone research archive](archive/standalone-r/README.md), including PCA/RLE QC, outlier handling, housekeeping and positive controls, RUV PRPS and immune deconvolution. These are historic analysis records, not new or fully self-contained runnable pipelines.
+
 ## Original research figures
 
 **66 original PNG images are now committed** under [`results/figures/original-uploads/`](results/figures/original-uploads/), including the appendix uploads. The originals are preserved byte-for-byte, and the root directory has been decluttered. See the [complete clickable image gallery](docs/original-figures-gallery.md) and the [supplementary volcano figure guide](docs/supplementary-volcano-gallery.md).

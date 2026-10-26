@@ -46,3 +46,5 @@ These are examples of potential issues in historical source scripts, **not verif
 2. Do not advertise nine independent stand-alone executable pipelines; they are interactive research artifacts with shared in-memory objects.
 3. Only convert exploratory analyses into reproducible scripts in a future distinct version, with dependencies, sample metadata, and checks. Do not retroactively alter the historic study.
 4. Avoid renaming numbered PNGs to specific treatments without verifying image captions against the original thesis/appendix.
+
+**Update (2026-10-26):** Author-supplied *text representations* of the pathway enrichment and KEGG exports are now preserved at [pathway enrichment / KEGG notes](pathway-enrichment-kegg.md), with raw pasted content under `archive/pathway-enrichment/`. These are not copies of the binary Excel workbooks, and Excel worksheet-level identity and formatting remain unverified.

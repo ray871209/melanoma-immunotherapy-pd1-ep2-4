@@ -1,56 +1,36 @@
-# Supplementary volcano-plot gallery
+# Supplementary volcano plots and p-value distributions
 
-The author provided original research figures for six treatment contrasts. These are historical outputs from the submitted master's thesis and appendix, rather than regenerated analyses.
+These figures are historical outputs from the author's master's thesis and appendix. **The 66 original research PNGs are now hosted in GitHub** in the [complete expandable image gallery](original-figures-gallery.md).
 
-## Adjusted: BASE + tumour purity
+## Appendix figure key
 
-| Comparison | Figure planned in `supplementary/` |
+| Appendix figure | Model/panels |
 | --- | --- |
-| Combo vs Vehicle | `adjusted_combo_vehicle.png` |
-| Anti-PD-1 vs Vehicle | `adjusted_anti_pd1_vehicle.png` |
-| EPAT vs Vehicle | `adjusted_epat_vehicle.png` |
-| Combo vs EPAT | `adjusted_combo_epat.png` |
-| Anti-PD-1 vs EPAT | `adjusted_anti_pd1_epat.png` |
-| Combo vs Anti-PD-1 | `adjusted_combo_anti_pd1.png` |
+| **S1** | Six treatment-contrast volcano plots, adjusted for BASE immune scores and tumour purity |
+| **S2** | The same six adjusted volcano comparisons with positive and housekeeping negative-control genes highlighted |
+| **S3** | Six volcano comparisons without BASE or tumour-purity adjustment |
+| **S4** | Six unadjusted volcano comparisons with control genes highlighted |
+| **S5** | Six p-value distribution comparisons: adjusted for BASE and purity versus unadjusted |
+| **S6** | p-value distributions comparing BASE + purity to BASE-only models |
+| **S7** | p-value distributions comparing BASE + purity to purity-only models |
+| **S8** | p-value distributions comparing purity-only to unadjusted models |
+| **S9** | p-value distributions comparing BASE-only to unadjusted models |
 
-## Unadjusted: treatment only
+The author selected a representative subset of p-value distribution figures for the portfolio. The appendix source contains other model comparisons; they do not need to be duplicated in the main README.
 
-| Comparison | Figure planned in `supplementary/` |
-| --- | --- |
-| Combo vs Vehicle | `unadjusted_combo_vehicle.png` |
-| Anti-PD-1 vs Vehicle | `unadjusted_anti_pd1_vehicle.png` |
-| EPAT vs Vehicle | `unadjusted_epat_vehicle.png` |
-| Combo vs EPAT | `unadjusted_combo_epat.png` |
-| Anti-PD-1 vs EPAT | `unadjusted_anti_pd1_epat.png` |
-| Combo vs Anti-PD-1 | `unadjusted_combo_anti_pd1.png` |
+### Six treatment contrasts
 
-## Highlighted positive / negative control genes
+1. Anti-PD-1 + EPAT vs Vehicle
+2. Anti-PD-1 vs Vehicle
+3. EPAT vs Vehicle
+4. Anti-PD-1 + EPAT vs EPAT
+5. Anti-PD-1 vs EPAT
+6. Anti-PD-1 + EPAT vs Anti-PD-1
 
-Figures with orange positive controls and blue housekeeping negative controls were also supplied for six adjusted contrasts and selected unadjusted contrasts. The coloured control-gene highlights should not be confused with significant up/down-regulation colouring used in the standard volcano panels.
+The thesis's appendix S1–S9 provides the authoritative captions and ordering. The uploaded files have timestamp-based names; the [66-image gallery](original-figures-gallery.md) provides images and file links without speculative assignments.
 
-## Interpreting the plots
+## Interpretation
 
-The final analysis compared differential expression signatures after adjusting for BASE cell-type enrichment scores and ESTIMATE tumour purity, versus treatment-only models. Changes in apparent differential expression can reflect covariate composition effects, but the plots alone cannot establish the origin or causal role of individual genes.
+Covariate adjustment with BASE enrichment and ESTIMATE tumour purity can materially change the number and estimated magnitude of apparent treatment-associated DE genes. This does not, on its own, establish which genes are intrinsically expressed by tumour cells or whether treatment changes are causal. BASE scores are enrichment estimates, not deconvolved absolute cell counts.
 
-## Upload status
-
-The original PNG plots have been collected and renamed into a separate downloadable figure package. **The binary image files have not yet been committed to this GitHub repository.** This index deliberately avoids broken image embeds or suggesting they have been uploaded.
-
-## Final selected p-value and control-highlighted plots
-
-The author supplied the remaining four unadjusted highlighted-control volcano comparisons, plus six historical p-value distribution comparisons (fully adjusted versus unadjusted). The **main README should show only Combo vs Vehicle** to avoid overcrowding. Other contrasts can be viewed in the supplementary gallery once images are uploaded.
-
-Additional expected image names in the downloadable figure package:
-
-- `controls_unadjusted_epat_vehicle.png`
-- `controls_unadjusted_combo_anti_pd1.png`
-- `controls_unadjusted_combo_epat.png`
-- `controls_unadjusted_anti_pd1_epat.png`
-- `pvalue_combo_vehicle_adjusted_vs_unadjusted.png`
-- `pvalue_anti_pd1_vehicle_adjusted_vs_unadjusted.png`
-- `pvalue_epat_vehicle_adjusted_vs_unadjusted.png`
-- `pvalue_combo_epat_adjusted_vs_unadjusted.png`
-- `pvalue_anti_pd1_epat_adjusted_vs_unadjusted.png`
-- `pvalue_combo_anti_pd1_adjusted_vs_unadjusted.png`
-
-These are **historical results, not newly computed plots**. As of this documentation update, the PNGs are packaged separately and **not yet pushed to this repository**.
+The highlighted positive and housekeeping controls are separate from conventional volcano up/down significance colouring.

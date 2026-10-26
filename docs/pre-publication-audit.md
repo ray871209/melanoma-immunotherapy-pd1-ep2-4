@@ -40,3 +40,14 @@ This repository preserves a 2025 master's historical bulk-RNA-seq research analy
 - Only change Repository visibility after the checks above.
 
 **Update (2026-10-26):** Author-supplied *text representations* of the pathway enrichment and KEGG exports are now preserved at [pathway enrichment / KEGG notes](pathway-enrichment-kegg.md), with raw pasted content under `archive/pathway-enrichment/`. These are not copies of the binary Excel workbooks, and Excel worksheet-level identity and formatting remain unverified.
+
+## Final pre-publication update (2026-10-26)
+
+- **Inventory:** 107 current repository files, including 66 original PNGs. No original Excel binary workbooks or external housekeeping TSV in the tracked tree.
+- **Source text scan:** 32 readable project text/code files were checked for simple high-risk signatures (emails, hard-coded credential assignments, home-directory paths, private-key headers and explicit student-ID labels); no matches detected. This remains a limited pattern scan, not a complete privacy audit.
+- **Links:** Seven key Markdown pages were checked for local relative-link targets; the only non-file targets flagged were existing *directory links*, which resolve to valid folders. The figure preview filenames were already repaired after original image renaming.
+- **Scientific pages:** Outdated claims that source figures had not been uploaded were corrected in `docs/figure-index.md` and `docs/results-highlights.md`. The historically sourced KEGG export and the 7-pathway BASE + purity result have a dedicated provenance page.
+- **Outstanding release blockers:** Contents of 66 original PNGs could not be visually inspected through the current GitHub binary-reading interface. Earlier versions in the full Git history were not exhaustively checked. These cannot be treated as automatically safe merely because the repository's current text scan was clean.
+- **Visibility:** Private; publication was not performed. Switching to Public requires the repository owner's GitHub Settings → General → Danger Zone → Change repository visibility, after visual/history review.
+
+**Publication advice:** If releasing promptly, first manually open all original PNGs in the [gallery](original-figures-gallery.md) and inspect GitHub history for accidental identifiers and copyrighted images. The assistant cannot certify those uninspected materials.

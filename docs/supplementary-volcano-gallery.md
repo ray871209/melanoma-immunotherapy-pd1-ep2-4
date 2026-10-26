@@ -35,3 +35,22 @@ The final analysis compared differential expression signatures after adjusting f
 ## Upload status
 
 The original PNG plots have been collected and renamed into a separate downloadable figure package. **The binary image files have not yet been committed to this GitHub repository.** This index deliberately avoids broken image embeds or suggesting they have been uploaded.
+
+## Final selected p-value and control-highlighted plots
+
+The author supplied the remaining four unadjusted highlighted-control volcano comparisons, plus six historical p-value distribution comparisons (fully adjusted versus unadjusted). The **main README should show only Combo vs Vehicle** to avoid overcrowding. Other contrasts can be viewed in the supplementary gallery once images are uploaded.
+
+Additional expected image names in the downloadable figure package:
+
+- `controls_unadjusted_epat_vehicle.png`
+- `controls_unadjusted_combo_anti_pd1.png`
+- `controls_unadjusted_combo_epat.png`
+- `controls_unadjusted_anti_pd1_epat.png`
+- `pvalue_combo_vehicle_adjusted_vs_unadjusted.png`
+- `pvalue_anti_pd1_vehicle_adjusted_vs_unadjusted.png`
+- `pvalue_epat_vehicle_adjusted_vs_unadjusted.png`
+- `pvalue_combo_epat_adjusted_vs_unadjusted.png`
+- `pvalue_anti_pd1_epat_adjusted_vs_unadjusted.png`
+- `pvalue_combo_anti_pd1_adjusted_vs_unadjusted.png`
+
+These are **historical results, not newly computed plots**. As of this documentation update, the PNGs are packaged separately and **not yet pushed to this repository**.

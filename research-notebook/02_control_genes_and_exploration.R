@@ -137,7 +137,19 @@ W_factors   <- metadata(se_norm)$W
 library(ggplot2)
 library(ggforce)
 library(reshape2)
-epat_positive_control <- c( "CCL19","CCL3","CCL5","CD14","CD38","CLEC5A","CRP","CSF2","CSF3","CXCL10", "CXCL11","CYR61","EDN1","EREG","FCAR","HIF3A","HLA-DRA","IFNG","IL1A","IL1B", "IL12A","IL12B","IL17A","IL18","IL1RL1","IL3","IL6","ITGAM","JAK2","KLK15", "KLK2","KLK3","LTB4R2_A","MMP9","NCAM1","NCR1","NOS2","PDE4C","PGK1","PLA2G1B", "PLA2G2A","PLA2G2D","PLA2G5","PRKAA2","PTGER3","PTGS2","SELE","STAT1","STAT2", "TLR4","TLR7","TNFSF10","TNFSF13B","VEGFC")
+epat_positive_control <- c(
+  "CCL19", "CCL3", "CCL5", "CD14", "CD38",
+  "CLEC5A", "CRP", "CSF2", "CSF3", "CXCL10",
+  "CXCL11", "CYR61", "EDN1", "EREG", "FCAR",
+  "HIF3A", "HLA-DRA", "IFNG", "IL1A", "IL1B",
+  "IL12A", "IL12B", "IL17A", "IL18", "IL1RL1",
+  "IL3", "IL6", "ITGAM", "JAK2", "KLK15",
+  "KLK2", "KLK3", "LTB4R2_A", "MMP9", "NCAM1",
+  "NCR1", "NOS2", "PDE4C", "PGK1", "PLA2G1B",
+  "PLA2G2A", "PLA2G2D", "PLA2G5", "PRKAA2", "PTGER3",
+  "PTGS2", "SELE", "STAT1", "STAT2", "TLR4",
+  "TLR7", "TNFSF10", "TNFSF13B", "VEGFC"
+)
 
 # Map gene symbols to Ensembl
 epat1 <- toupper(conversion$external_gene_name) %in% toupper(epat_positive_control)
@@ -178,7 +190,15 @@ ggplot(EPAT_long, aes(x = Group, y = Expression, fill = Group)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Anti-PD-1 positive control genes
-anti_PD1_positive <- c( "TBX21","STAT1","IRF1","TNF","IFNG", "CD8A","CD8B","ITGAE","PDCD1","CCL5","CXCL13","IL2", "CD247","CD5","CD6","CD69", "CD96", "GZMK","CD274","CD2","ITGAL", "CCL4","CCR5","CXCL9", "CXCL10","CXCL11", "GZMB","PRF1","GZMA", "CD4", "H2-K1","H2-D1","B2M")
+anti_PD1_positive <- c(
+  "TBX21", "STAT1", "IRF1", "TNF", "IFNG",
+  "CD8A", "CD8B", "ITGAE", "PDCD1", "CCL5",
+  "CXCL13", "IL2", "CD247", "CD5", "CD6",
+  "CD69", "CD96", "GZMK", "CD274", "CD2",
+  "ITGAL", "CCL4", "CCR5", "CXCL9", "CXCL10",
+  "CXCL11", "GZMB", "PRF1", "GZMA", "CD4",
+  "H2-K1", "H2-D1", "B2M"
+)
 
 apd1 <- toupper(conversion$external_gene_name) %in% toupper(anti_PD1_positive)
 antiPD1_ensembl  <- conversion$ensembl_gene_id[apd1]
@@ -298,11 +318,32 @@ ggplot(pval_counts_epat, aes(x = Bin, y = Count)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ## Anti-PD-1 from literature
-antiPD1_upregulated <- c("IFNG","TNF","IL6","IL1B","IFNA2","IFNB1","STAT1","NFKBIA","IKBKB","IKBKG","RELA","CHUK","IL12A","IL12B","IL21","IL27","IL18","IL2","TLR4","TLR7","IFNAR1","IRF3","IRF7","CXCL12","CD44","CD3","NOS2","CSF2","CSF3","TNFSF10","EBI3","SPI1","ITK")
+antiPD1_upregulated <- c(
+  "IFNG", "TNF", "IL6", "IL1B", "IFNA2",
+  "IFNB1", "STAT1", "NFKBIA", "IKBKB", "IKBKG",
+  "RELA", "CHUK", "IL12A", "IL12B", "IL21",
+  "IL27", "IL18", "IL2", "TLR4", "TLR7",
+  "IFNAR1", "IRF3", "IRF7", "CXCL12", "CD44",
+  "CD3", "NOS2", "CSF2", "CSF3", "TNFSF10",
+  "EBI3", "SPI1", "ITK"
+)
 
-antiPD1_positive_genes <- c( "Cd44","Chuk","Cxcl12","Ebi3","Ifnar1","Ifng","Ikbkb","Ikbkg","Il12b","Il18","Il1b","Il2","Il27","Il6","Irf3","Irf7","Itk","Nfkbia","Nos2","Rela","Spi1","Stat1","Tlr4","Tlr7","Tnf","Tnfsf10","Cd28","Irf1","Myd88","Tbx21","Tlr3","Cxcl10")
+antiPD1_positive_genes <- c(
+  "Cd44", "Chuk", "Cxcl12", "Ebi3", "Ifnar1",
+  "Ifng", "Ikbkb", "Ikbkg", "Il12b", "Il18",
+  "Il1b", "Il2", "Il27", "Il6", "Irf3",
+  "Irf7", "Itk", "Nfkbia", "Nos2", "Rela",
+  "Spi1", "Stat1", "Tlr4", "Tlr7", "Tnf",
+  "Tnfsf10", "Cd28", "Irf1", "Myd88", "Tbx21",
+  "Tlr3", "Cxcl10"
+)
 
-PD1_markers <- c("Ifnar1","Ifng","Ikbkb","Il12b","Il18","Il2","Irf3","Irf7","Nfkbia","Nos2","Rela","Stat1","Tlr4","Tlr7","Tnf","Tnfsf10" )
+PD1_markers <- c(
+  "Ifnar1", "Ifng", "Ikbkb", "Il12b", "Il18",
+  "Il2", "Irf3", "Irf7", "Nfkbia", "Nos2",
+  "Rela", "Stat1", "Tlr4", "Tlr7", "Tnf",
+  "Tnfsf10"
+)
 
 upregulated_in_PD1_literature <- c("MYD88","TBX21","TLR3","IRF1","TLR9","CD28")
 
@@ -344,7 +385,16 @@ for (page_num in 1:4) {
 a_pvals <- c(0.055013832,0.838256486,0.487668353,0.391267279,0.177909595,0.307434166,0.012763008,0.094166375,0.540291375,0.653378911,0.111346887,0.270344141,0.016010991,0.653378911,0.016010991,0.347745599,0.007963489,0.347745599,0.094166375,0.079179350,0.024744672,0.177909595,0.019964453,0.775051374,0.024744672,0.002880485,0.055013832,0.130911128,0.775051374,0.967435545,0.177909595,0.030486157)
 
 ## EPAT from literature
-upregulated_EPAT <- c("IFNG","IFNA2","IFNB1","IFNAR1","IRF1","IRF3","IRF7","STAT1","STAT4","JAK1","JAK2","TLR4","TLR7","TLR9","TNF","IL12A","IL12B","IL1B","IL2","IL18","IL21","CD3D","CD3E","CD3G","CD3Z","CIITA","PML","PARP9","RELA","CHUK","IKBKB","ITK","TICAM1", "IL27","TMEM173","MAP3K8","IFIH1","MAVS","MYD88")
+upregulated_EPAT <- c(
+  "IFNG", "IFNA2", "IFNB1", "IFNAR1", "IRF1",
+  "IRF3", "IRF7", "STAT1", "STAT4", "JAK1",
+  "JAK2", "TLR4", "TLR7", "TLR9", "TNF",
+  "IL12A", "IL12B", "IL1B", "IL2", "IL18",
+  "IL21", "CD3D", "CD3E", "CD3G", "CD3Z",
+  "CIITA", "PML", "PARP9", "RELA", "CHUK",
+  "IKBKB", "ITK", "TICAM1", "IL27", "TMEM173",
+  "MAP3K8", "IFIH1", "MAVS", "MYD88"
+)
 
 epat2 <- tolower(conversion$external_gene_name) %in% tolower(upregulated_EPAT)
 epat_genes_ensembl <- conversion$ensembl_gene_id[epat2]

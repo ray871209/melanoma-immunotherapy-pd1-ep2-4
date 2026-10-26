@@ -48,7 +48,7 @@ The author has now uploaded original research and appendix PNGs. They are indexe
 
 The final reported workflow retained **14,917 genes** after filtering (CPM >= 0.5 in at least three samples) and included **38 samples** after removal of the QC outlier. For the combination vs vehicle contrast, the thesis recorded **682 differentially expressed genes** meeting |log2FC| > 0.585 and nominal p < 0.05 in the BASE + purity model, followed by DAVID/KEGG overrepresentation analysis. The thesis reports broader signals without adjustment; this is an observation, not proof that all unadjusted genes are false positives.
 
-**Other original figures:** Original uploaded research images, including appendix supplementary outputs, are now available in the [66-image gallery](docs/original-figures-gallery.md). Files retain the exact submitted pixels and timestamped names pending panel-by-panel caption verification.
+**Other original figures:** Original uploaded research images, including appendix supplementary outputs, are now available in the [66-image gallery](docs/original-figures-gallery.md). Original pixels are preserved; filenames are now stable sequential archive identifiers pending panel-by-panel caption verification.
 
 ## Selected software and methods
 
@@ -86,20 +86,20 @@ The notebook files are **reorganised excerpts of the original code**, not rewrit
 
 **66 original PNG images are now committed** under [`results/figures/original-uploads/`](results/figures/original-uploads/), including the appendix uploads. The originals are preserved byte-for-byte, and the root directory has been decluttered. See the [complete clickable image gallery](docs/original-figures-gallery.md) and the [supplementary volcano figure guide](docs/supplementary-volcano-gallery.md).
 
-The original files were pasted into GitHub with timestamp filenames. To avoid labelling the wrong contrast or model, individual image captions must be matched to the thesis/appendix before renaming. The [portfolio SVGs](results/figures/) remain clearly distinguished as diagrams/redrawings, not original statistical plots.
+The original files had timestamp filenames and are now consistently named `research-figure-001.png` through `research-figure-066.png`. These archive identifiers avoid asserting an unverified contrast or model; scientific captions can be cross-checked against the thesis and appendix. The [portfolio SVGs](results/figures/) remain clearly distinguished as diagrams/redrawings, not original statistical plots.
 
 ## Original figures — preview
 
 <details>
 <summary>View three of the original research PNG uploads</summary>
 
-The images below are unmodified author-supplied research files. Their timestamp-based filenames do not identify which scientific panel each image depicts. See the [complete 66-image visual gallery](docs/original-figures-gallery.md) and the [appendix S1–S9 figure key](docs/supplementary-volcano-gallery.md) for exploration and methodological context.
+The images below are unmodified author-supplied research files. Their sequential archive filenames do not identify which scientific panel each image depicts. See the [complete 66-image visual gallery](docs/original-figures-gallery.md) and the [appendix S1–S9 figure key](docs/supplementary-volcano-gallery.md) for exploration and methodological context.
 
-![Original research upload 1](./results/figures/original-uploads/image.png)
+![Original research upload 1](./results/figures/original-uploads/research-figure-001.png)
 
-![Original research upload 2](./results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.20%20PM.png)
+![Original research upload 2](./results/figures/original-uploads/research-figure-002.png)
 
-![Original research upload 3](./results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.25%20PM.png)
+![Original research upload 3](./results/figures/original-uploads/research-figure-003.png)
 
 </details>
 

@@ -87,6 +87,7 @@ The notebook files are **reorganised excerpts of the original code**, not rewrit
 - [Code navigation guide](research-notebook/README.md)
 - [Historical research highlights](docs/results-highlights.md)
 - [Editorial code-review notes](docs/code-review-notes.md)
+- [Supplementary volcano-plot gallery and figure provenance](docs/supplementary-volcano-gallery.md)
 - [BASE-versus-quanTIseq decision](docs/base-selection.md)
 
 ## Principal conclusions

@@ -6,11 +6,11 @@
 | --- | --- | --- | --- |
 | 8 | Study cohort table | Compare sample counts by treatment and collection day | New SVG redrawn from the group's reported cells |
 | 9 | RNA-seq workflow | Show original methods and ordering | [Clean portfolio diagram](../results/figures/research_workflow.svg) redrawn from presentation methods; original slide not copied |
-| 10 | RLE panels | Compare raw, CPM and CPM + TMM | Original panel not yet extracted |
-| 11 | PCA panels | Show library-size and purity-related patterns | Original panel not yet extracted |
-| 12 | Tumour-purity chart and BASE heatmap | Show heterogeneity and estimated immune scores | Original panel not yet extracted |
-| 14 | Four volcano panels | Contrast unadjusted Model 4 and adjusted Model 1 | Original panel not yet extracted |
-| 15 | P-value comparison | Show model-adjustment effects | Original panel not yet extracted |
+| 10 | RLE panels | Compare raw, CPM and CPM + TMM | Original research PNGs uploaded; timestamped image identity awaits panel mapping |
+| 11 | PCA panels | Show library-size and purity-related patterns | Original research PNGs uploaded; timestamped image identity awaits panel mapping |
+| 12 | Tumour-purity chart and BASE heatmap | Show heterogeneity and estimated immune scores | Original research PNGs uploaded; timestamped image identity awaits panel mapping |
+| 14 | Four volcano panels | Contrast unadjusted Model 4 and adjusted Model 1 | Original research PNGs uploaded; timestamped image identity awaits panel mapping |
+| 15 | P-value comparison | Show model-adjustment effects | Original research PNGs uploaded; timestamped image identity awaits panel mapping |
 | 16 | KEGG results and pathway plot | Summarise enriched pathways | Previously redrawn FDR-only SVG from thesis Table 6 |
 
 ## Methodological selection
@@ -33,4 +33,4 @@ These row entries sum to **19 on Day 2 and 19 on Day 5 (total 38)**, whereas the
 - The volcano comparisons illustrate differences in the observed expression signatures when covariate adjustment changes. They do not prove that any particular gene is intrinsically tumour-derived.
 - The historical oral script explains the intended analysis and interpretation; it is not code or raw data.
 - Source slides show student-identifying information on the cover and contain third-party illustrations in background sections. Do not upload the original presentation wholesale without checking personally identifying content and third-party image permissions.
-- The original PCA/RLE/heatmap/volcano panels were not exported during this update because the binary slide-extraction environment was unavailable. Do not link to nonexistent original image files.
+- The researcher subsequently uploaded 66 original research and appendix PNGs. All are hosted in the [image gallery](original-figures-gallery.md) with neutral, timestamp-based filenames; avoid assigning an exact panel-to-PNG mapping until the image has been visually identified.

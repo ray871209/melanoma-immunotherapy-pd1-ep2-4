@@ -1,16 +1,16 @@
-# Original figure upload checklist
+# Original figures — upload complete
 
-The following figures from the user's 19-page final presentation are still awaiting source-image export:
+**Status: complete.** The researcher subsequently uploaded **66 original PNG files** directly into the private GitHub repository; the project has moved these unchanged to [`results/figures/original-uploads/`](../results/figures/original-uploads/) and published a [browsable image gallery](original-figures-gallery.md).
 
-| Page | Figure | Suggested filename |
-|---|---|---|
-| 10 | RLE, three normalisation conditions | rle_normalisation.png |
-| 11 | PCA, before and after TMM | pca_normalisation.png |
-| 12 | ESTIMATE purity and BASE heatmap | tumour_purity_base.png |
-| 14 | Four adjusted/unadjusted volcano plots | volcano_adjustment.png |
-| 15 | P-value distribution comparisons | pvalue_comparison.png |
-| 16 | Original KEGG pathways table and plot | kegg_original.png |
+The original earlier export checklist is retained here as reference only:
 
-The page images can be viewed, but image bytes were unavailable for repository upload. None of these six PNG files has been uploaded. The existing SVG charts are separate visual summaries based on the original presentation and thesis. Do not use placeholders or synthetic volcano, PCA, or BASE plots.
+| Final presentation slide | Original content |
+| --- | --- |
+| 10 | RLE, raw / CPM / CPM + TMM |
+| 11 | PCA normalisation comparisons |
+| 12 | ESTIMATE tumour-purity estimates and BASE immune enrichment |
+| 14 | Adjusted/unadjusted treatment volcano plots |
+| 15 | p-value distributions |
+| 16 | KEGG pathway table and plot |
 
-Export only research results, not the student-identifying cover or third-party background illustrations. The 38 samples shown in the presentation are 19 Day 2 and 19 Day 5 based on its individual group counts.
+**No further user upload is requested.** The remaining editorial job is mapping the timestamp-only names to precise panel captions without guessing. The 3 portfolio SVG files were drawn from source descriptions, not substituted for original plots.

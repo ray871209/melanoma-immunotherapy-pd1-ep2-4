@@ -27,7 +27,7 @@ The author selected a representative subset of p-value distribution figures for 
 5. Anti-PD-1 vs EPAT
 6. Anti-PD-1 + EPAT vs Anti-PD-1
 
-The thesis's appendix S1–S9 provides the authoritative captions and ordering. The uploaded files have timestamp-based names; the [66-image gallery](original-figures-gallery.md) provides images and file links without speculative assignments.
+The thesis's appendix S1–S9 provides the authoritative captions and ordering. The uploaded files have sequential archive identifiers; the [66-image gallery](original-figures-gallery.md) provides images and file links without speculative assignments.
 
 ## Interpretation
 

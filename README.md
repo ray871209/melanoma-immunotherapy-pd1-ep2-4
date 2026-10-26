@@ -23,7 +23,7 @@ How do combination immunotherapy and EP2/EP4 antagonism influence the tumour mic
 
 ## Final oral presentation highlights
 
-The final oral presentation provides a compact narrative of the research and identifies original panels suitable for a portfolio. The repository currently displays a **redrawn method workflow**, a cohort diagram based on the presented treatment counts, and a KEGG FDR chart calculated from the published thesis table. The original RLE, PCA, BASE and volcano images have not yet been exported from the presentation.
+The final oral presentation provides a compact narrative of the research. The repository displays redrawn workflow/cohort/KEGG summary SVGs alongside **66 original author-uploaded research and appendix PNGs**, preserved separately in the [original image gallery](docs/original-figures-gallery.md).
 
 ![Mouse melanoma study design from the final presentation](results/figures/study_design.svg)
 
@@ -38,7 +38,7 @@ The final oral presentation provides a compact narrative of the research and ide
 - **Slide 15 — P-value distributions:** Adjusted vs unadjusted combination-versus-vehicle contrast.
 - **Slide 16 — Pathway enrichment:** Reported DAVID/KEGG table and comparative pathway-effect plot.
 
-These original panels are **documented but have not yet been extracted as separate image files**. We have not substituted synthetic versions for the original PCA, RLE, BASE or volcano plots. See [presentation figure notes](docs/oral-presentation-figures.md).
+The author has now uploaded original research and appendix PNGs. They are indexed without guessed figure identities in the [original image gallery](docs/original-figures-gallery.md). See the [presentation figure notes](docs/oral-presentation-figures.md) for the authoritative slide-to-figure descriptions.
 
 ## Featured historical results
 
@@ -48,7 +48,7 @@ These original panels are **documented but have not yet been extracted as separa
 
 The final reported workflow retained **14,917 genes** after filtering (CPM >= 0.5 in at least three samples) and included **38 samples** after removal of the QC outlier. For the combination vs vehicle contrast, the thesis recorded **682 differentially expressed genes** meeting |log2FC| > 0.585 and nominal p < 0.05 in the BASE + purity model, followed by DAVID/KEGG overrepresentation analysis. The thesis reports broader signals without adjustment; this is an observation, not proof that all unadjusted genes are false positives.
 
-**Other original figures:** The submitted thesis includes sample PCA/QC, immune deconvolution plots and volcano comparisons. The original PDF panels are not yet separately hosted in this repository; see [figure index](docs/figure-index.md). We do not substitute invented plots for them.
+**Other original figures:** Original uploaded research images, including appendix supplementary outputs, are now available in the [66-image gallery](docs/original-figures-gallery.md). Files retain the exact submitted pixels and timestamped names pending panel-by-panel caption verification.
 
 ## Selected software and methods
 
@@ -84,14 +84,17 @@ The notebook files are **reorganised excerpts of the original code**, not rewrit
 
 ## Original research figures
 
-The author's complete curated set contains **43 original figures** (13 main and 30 supplementary), including the six adjusted/unadjusted treatment contrasts, controls, BASE heatmap, RLE/PCA and pathway interpretation. The images are staged in a separate source ZIP and are **not yet committed to GitHub**. The verified manifest and a lossless local importer are in [original figure package notes](docs/original-figure-package.md); the [supplementary volcano gallery](docs/supplementary-volcano-gallery.md) describes each comparison.
+**66 original PNG images are now committed** under [`results/figures/original-uploads/`](results/figures/original-uploads/), including the appendix uploads. The originals are preserved byte-for-byte, and the root directory has been decluttered. See the [complete clickable image gallery](docs/original-figures-gallery.md) and the [supplementary volcano figure guide](docs/supplementary-volcano-gallery.md).
+
+The original files were pasted into GitHub with timestamp filenames. To avoid labelling the wrong contrast or model, individual image captions must be matched to the thesis/appendix before renaming. The [portfolio SVGs](results/figures/) remain clearly distinguished as diagrams/redrawings, not original statistical plots.
 
 ## Explore the research
 
 - [Code navigation guide](research-notebook/README.md)
 - [Historical research highlights](docs/results-highlights.md)
 - [Editorial code-review notes](docs/code-review-notes.md)
-- [Supplementary volcano-plot gallery and figure provenance](docs/supplementary-volcano-gallery.md)
+- [All 66 original research and appendix images](docs/original-figures-gallery.md)
+- [Supplementary volcano-plot guide and figure provenance](docs/supplementary-volcano-gallery.md)
 - [BASE-versus-quanTIseq decision](docs/base-selection.md)
 
 ## Principal conclusions

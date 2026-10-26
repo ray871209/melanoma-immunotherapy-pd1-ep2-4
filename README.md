@@ -82,6 +82,10 @@ This workflow describes the *historical research project*. The R code was used i
 
 The notebook files are **reorganised excerpts of the original code**, not rewritten replacements. Their internal exploratory snippets, overwritten variables, and dependencies on objects from previous R sessions have been preserved to avoid rewriting research history. They are for code review and portfolio demonstration; **do not assume each file will run independently**.
 
+## Original research figures
+
+The author's complete curated set contains **43 original figures** (13 main and 30 supplementary), including the six adjusted/unadjusted treatment contrasts, controls, BASE heatmap, RLE/PCA and pathway interpretation. The images are staged in a separate source ZIP and are **not yet committed to GitHub**. The verified manifest and a lossless local importer are in [original figure package notes](docs/original-figure-package.md); the [supplementary volcano gallery](docs/supplementary-volcano-gallery.md) describes each comparison.
+
 ## Explore the research
 
 - [Code navigation guide](research-notebook/README.md)

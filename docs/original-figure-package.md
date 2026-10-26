@@ -7,7 +7,7 @@ A previously curated local ZIP contained **43** selected images (13 main and 30 
 ## Provenance and quality
 
 - Every GitHub-uploaded image was moved from the repository root to the new `original-uploads/` folder by reusing its original Git blob SHA. Pixels, compression and statistics were not modified.
-- The original screenshots retained their GitHub-generated `Pasted ...png` names. Individual scientific identities/contrast names **have not been verified against the image pixels**, so the index intentionally does not invent renamed paths.
+- The original screenshots have been renamed to stable `research-figure-###.png` identifiers. Individual scientific identities/contrast names **have not been verified against the image pixels**, so the index intentionally does not invent renamed paths.
 - Portfolio diagrams in `results/figures/*.svg` are **new redrawings based on the submitted manuscript/presentation**, not original statistical plots.
 - BASE heatmaps encode relative cell-type enrichment scores, not absolute fractions or proportions.
 

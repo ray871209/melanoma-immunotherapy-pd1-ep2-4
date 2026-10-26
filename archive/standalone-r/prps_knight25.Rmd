@@ -1,0 +1,254 @@
+---
+title: "prps"
+output: html_document
+date: "2025-06-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(RUVprps)       
+library(SummarizedExperiment)
+library(biomaRt)       
+```
+
+```{r}
+mouse  <- useEnsembl("ensembl", dataset="mmusculus_gene_ensembl")
+
+anno   <- getBM(
+  attributes = c("ensembl_gene_id",
+                 "mgi_symbol",
+                 "entrezgene_id",
+                 "gene_biotype"),
+  filters    = "ensembl_gene_id",
+  values     = rownames(raw_counts),
+  mart       = mouse
+)
+
+anno   <- anno[!duplicated(anno$ensembl_gene_id), ]
+rownames(anno) <- anno$ensembl_gene_id
+```
+
+```{r}
+min.count   <- 15
+min.samples <- ceiling(0.1 * nsamp)
+keep.expr   <- rowSums(raw_counts > min.count) >= min.samples
+```
+
+```{r}
+keep.pc     <- anno$gene_biotype == "protein_coding"
+```
+
+```{r}
+keep.entrez <- !is.na(anno$entrezgene_id)
+keep.symbol <- !is.na(anno$mgi_symbol) & anno$mgi_symbol != ""
+```
+
+```{r}
+keep.genes  <- names(keep.expr)[keep.expr] 
+keep.genes  <- intersect(keep.genes, rownames(anno)[keep.pc & keep.entrez & keep.symbol])
+```
+
+```{r}
+# subset count matrix
+counts.keep <- raw_counts[keep.genes, ]
+```
+
+
+```{r}
+log2_filtered_tmm <- read.table("log2_filtered_tmm.txt", header=TRUE, row.names=1)
+```
+
+```{r}
+# filter out zero-variance rows:
+log2_filtered_tmm <- log2_filtered_tmm[
+  apply(log2_filtered_tmm, 1, var) != 0, 
+  , 
+  drop = FALSE
+]
+```
+
+```{r}
+
+est_raw <- read.delim(
+  "estimate_scores.txt",
+  sep    = "\t",
+  header = TRUE,
+  skip   = 2,
+  stringsAsFactors = FALSE
+)
+rownames(est_raw) <- est_raw[[1]]
+est_df <- as.data.frame(est_raw[, -1, drop = FALSE])
+if (!"ESTIMATEScore" %in% rownames(est_df)) {
+  stop("Row 'ESTIMATEScore' not found in estimate_scores.txt. Check the file.")
+}
+
+common_samples <- intersect(colnames(log2_filtered_tmm), colnames(est_df))
+purity_vector <- setNames(
+  rep(NA_real_, ncol(log2_filtered_tmm)),
+  colnames(log2_filtered_tmm)
+)
+purity_vector[common_samples] <- as.numeric(est_df["ESTIMATEScore", common_samples])
+if (length(setdiff(colnames(log2_filtered_tmm), common_samples)) > 0) {
+  warning("ESTIMATEScore missing for some samples: ", 
+          paste(setdiff(colnames(log2_filtered_tmm), common_samples), collapse = ", "))
+}
+```
+
+```{r}
+# Build a SummarizedExperiment named se with counts + purity
+coldata <- DataFrame(
+  sampleID = colnames(log2_filtered_tmm),
+  purity   = purity_vector,
+  row.names = colnames(log2_filtered_tmm),
+  stringsAsFactors = FALSE
+)
+
+se <- SummarizedExperiment(
+  assays  = list(counts = as.matrix(log2_filtered_tmm)),
+  colData = coldata
+)
+```
+
+```{r}
+if (!exists("housekeeping_mouse_ids")) {
+  stop("'housekeeping_mouse_ids' must be defined as a character vector of Ensembl IDs")
+}
+
+# Suppose 'se' is your SummarizedExperiment and 'housekeeping_mouse_ids' is defined:
+ncg.log <- rownames(se) %in% housekeeping_mouse_ids
+
+# Check how many were found:
+table(ncg.log)
+# should show how many TRUE vs FALSE
+
+# Now call addNCGs with that logical vector:
+se <- addNCGs(
+  se.obj     = se,
+  ncg        = ncg.log,
+  subset.name = "housekeeping"
+)
+
+```
+
+```{r}
+se <- createPrPsForContinuousUV(
+  se.obj             = se,
+  assay.name         = "counts",
+  bio.variables      = "treatment",
+  main.uv.variable   = "purity",
+  other.uv.variables = NULL,
+  min.sample.for.ps  = 3,
+  bio.clustering.method       = "quantile",
+  nb.bio.clusters             = 2,
+  other.uv.clustering.method  = "kmeans",
+  nb.other.uv.clusters        = 2,
+  apply.log                   = TRUE,
+  pseudo.count                = 1,
+  check.se.obj                = TRUE,
+  remove.na                   = "both",
+  plot.prps.map               = TRUE,
+  prps.group.name             = "purity",
+  prps.sets.name              = NULL,
+  save.se.obj                 = TRUE,
+  verbose                     = TRUE
+)
+```
+
+```{r}
+se@metadata$PRPS <- NULL
+
+
+counts_mat <- assay(se, "counts")
+purity_vec  <- colData(se)$purity
+trt_vec     <- colData(se)$treatment
+
+
+prps_list <- list()
+for (trt in unique(trt_vec)) {
+  idx <- which(trt_vec == trt & !is.na(purity_vec))
+  if (length(idx) < 6) next
+
+  ord      <- idx[order(purity_vec[idx], decreasing = TRUE)]
+  top3_idx <- ord[1:3]
+  bot3_idx <- ord[(length(ord) - 2):length(ord)]
+
+  high_ps  <- rowMeans(counts_mat[, top3_idx, drop = FALSE])
+  low_ps   <- rowMeans(counts_mat[, bot3_idx, drop = FALSE])
+
+  prp_mat  <- cbind(high_ps, low_ps)
+  colnames(prp_mat) <- c(trt, trt)   # **both columns get the same name**
+  rownames(prp_mat) <- rownames(counts_mat)
+
+  prps_list[[trt]] <- prp_mat
+}
+
+# (Optional diagnostic)
+message("PRPS list length: ", length(prps_list))
+if (length(prps_list) > 0) {
+  message("Arms with PRPS sets: ", paste(names(prps_list), collapse = ", "))
+}
+
+
+se@metadata$PRPS <- list(
+  supervised = list(
+    purity = list(prps.data = prps_list)
+  )
+)
+
+
+for (nm in names(prps_list)) {
+  cols <- colnames(prps_list[[nm]])
+  if (length(unique(cols)) != 1) {
+    stop("PRPS columns for ", nm, " are not identical.")
+  }
+}
+message("Each PRPS matrix now has two columns with the same name, e.g. '", 
+        names(prps_list)[1], "'")
+```
+
+```{r}
+ncg.log <- rownames(se) %in% housekeeping_mouse_ids
+
+
+se@metadata$NCG <- list(
+  supervised = list(
+    housekeeping = list(
+      ncg.set = list(
+        housekeeping = ncg.log
+      )
+    )
+  )
+)
+
+
+
+res_se <- RUVIIIprps(
+  se.obj             = se,
+  assay.name         = "counts",
+  control.assay.type = "prps",
+  prps.type          = "supervised",
+  prps.group         = "purity",
+  prps.set.names     = NULL,
+  ncg.type           = "supervised",       
+  ncg.group          = "housekeeping",
+  ncg.set.names      = NULL,
+  technical.replicates = NULL,
+  k                  = 2,
+  apply.log          = TRUE,
+  data.to.log        = "assay",
+  pseudo.count       = 1,
+  eta                = NULL,
+  include.intercept  = TRUE,
+  return.info        = FALSE,
+  check.se.obj       = TRUE,
+  remove.na          = "none",
+  output.name        = NULL,
+  save.se.obj        = TRUE,
+  verbose            = TRUE
+)
+```

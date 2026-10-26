@@ -232,4 +232,7 @@ pca_plot <- ggMarginal(pca, type = "density", groupColour = TRUE, groupFill = TR
 pca_data$LibrarySize <- library_sizes
 ggplot(pca_data, aes(x = PC1, y = PC2, color = LibrarySize)) + geom_point(size = 3) + scale_color_gradientn(colors = c("blue", "yellow", "red"), limits = c(min(library_sizes), max(library_sizes))) + labs(title = "PCA - labaled by Library Size", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Library Size") + theme_minimal()
 
-# PCA raw count-CPM-TMM labaled by tumor purityggplot(pca_df, aes(x = PC1, y = PC2, color = TumorPurity)) + geom_point(size = 3) + labs(title = "PCA - labaled by  Tumor Purity", x = paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Tumor Purity") + scale_color_gradient(low = "blue", high = "red") + theme_minimal()
+# PCA raw count-CPM-TMM labaled by tumor purityggplot(pca_df, aes(x = PC1, y = PC2, color =
+# TumorPurity)) + geom_point(size = 3) + labs(title = "PCA - labaled by Tumor Purity", x =
+# paste0("PC1 (", pc1_var, "%)"), y = paste0("PC2 (", pc2_var, "%)"), color = "Tumor Purity") +
+# scale_color_gradient(low = "blue", high = "red") + theme_minimal()

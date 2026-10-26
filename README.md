@@ -88,6 +88,21 @@ The notebook files are **reorganised excerpts of the original code**, not rewrit
 
 The original files were pasted into GitHub with timestamp filenames. To avoid labelling the wrong contrast or model, individual image captions must be matched to the thesis/appendix before renaming. The [portfolio SVGs](results/figures/) remain clearly distinguished as diagrams/redrawings, not original statistical plots.
 
+## Original figures — preview
+
+<details>
+<summary>View three of the original research PNG uploads</summary>
+
+The images below are unmodified author-supplied research files. Their timestamp-based filenames do not identify which scientific panel each image depicts. See the [complete 66-image visual gallery](docs/original-figures-gallery.md) and the [appendix S1–S9 figure key](docs/supplementary-volcano-gallery.md) for exploration and methodological context.
+
+![Original research upload 1](./results/figures/original-uploads/image.png)
+
+![Original research upload 2](./results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.20%20PM.png)
+
+![Original research upload 3](./results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.25%20PM.png)
+
+</details>
+
 ## Explore the research
 
 - [Code navigation guide](research-notebook/README.md)

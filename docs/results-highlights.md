@@ -26,7 +26,7 @@ The thesis examined six treatment contrasts under models with different covariat
 - Pertussis
 - Systemic lupus erythematosus
 
-The enrichment list is reproduced here only as a summary of the research narrative. For exact p-values, FDRs, gene memberships and model definitions, consult the original thesis/appendix. It is not an independent validation.
+The enrichment list is reproduced here only as a summary of the research narrative. For the transcribed historical KEGG p-values, Benjamini corrections and DAVID FDR fields, see [original KEGG enrichment notes](pathway-enrichment-kegg.md). For all model definitions and gene memberships, consult the thesis and source exports. It is not an independent validation.
 
 ## Interpretation
 
@@ -34,4 +34,4 @@ Comparing unadjusted and adjusted models helped illustrate the impact of tumour 
 
 ## Figures
 
-The thesis contains PCA/RLE, volcano plots, immune deconvolution visualisations and supporting enrichment tables. Figures have not been copied into this repository during this curation because the source permissions and appropriate attribution have not yet been reviewed.
+The [66 original researcher-uploaded PNGs](original-figures-gallery.md) are archived, without image editing, alongside separately identified redrawn portfolio SVG diagrams. Individual original plots retain sequential archive IDs until the scientific panel identity has been verified. Before public release, image content and reuse rights still need review.

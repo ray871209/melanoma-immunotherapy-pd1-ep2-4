@@ -136,7 +136,8 @@ ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
   legend.position = "none")
 
 # p-value distribution to compare the same contrast with different model(model1, model2, model3, model4)
-# res_m1_AntiPD1_vs_Vehicle  res_m1_EPAT_vs_Vehicle     res_m1_Combo_vs_Vehicle res_m1_AntiPD1_vs_EPAT     res_m1_Combo_vs_EPAT       res_m1_Combo_vs_AntiPD1
+# res_m1_AntiPD1_vs_Vehicle res_m1_EPAT_vs_Vehicle res_m1_Combo_vs_Vehicle
+# res_m1_AntiPD1_vs_EPAT res_m1_Combo_vs_EPAT res_m1_Combo_vs_AntiPD1
 # all contrast group with model 1, if model 2 swap m1 to m2
 # Example for combination vs vehicle with model1 vs model 4
 df_p <- data.frame(
@@ -173,7 +174,8 @@ plot_volcano_with(res_m1_Combo_vs_Vehicle, "Volcano: Anti-PD-1 + EPAT vs Vehicle
 # example:  Anti-PD-1 vs Vehicle
 plot_volcano_with(res_m1_AntiPD1_vs_Vehicle, "Volcano: Anti-PD-1 vs Vehicle (BASE, with purity)")
 
-# volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs Vehicle as example, highlight positive(yellow) and negative control gene(blue)
+# volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs
+# Vehicle as example, highlight positive(yellow) and negative control gene(blue)
 
 plot_volcano_highlights <- function(
   res_with,

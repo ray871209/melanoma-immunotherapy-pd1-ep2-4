@@ -31,7 +31,16 @@ library(ggExtra)
 library(reshape2)
 
 # Assign treatment labels to samples in the original matrix order.
-group <- c("EPAT", "Vehicle", "Anti-PD-1+EPAT", "Vehicle", "Vehicle","EPAT", "Anti-PD-1+EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle","Anti-PD-1", "EPAT", "Anti-PD-1", "Anti-PD-1+EPAT", "Vehicle","Anti-PD-1", "EPAT", "Anti-PD-1", "EPAT", "Anti-PD-1+EPAT","Vehicle", "Vehicle", "Anti-PD-1", "Anti-PD-1", "Anti-PD-1","Anti-PD-1", "Anti-PD-1", "Vehicle", "EPAT", "Anti-PD-1+EPAT","Vehicle", "EPAT", "Anti-PD-1+EPAT", "Anti-PD-1+EPAT","Anti-PD-1+EPAT", "EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle")
+group <- c(
+  "EPAT", "Vehicle", "Anti-PD-1+EPAT", "Vehicle", "Vehicle",
+  "EPAT", "Anti-PD-1+EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle",
+  "Anti-PD-1", "EPAT", "Anti-PD-1", "Anti-PD-1+EPAT", "Vehicle",
+  "Anti-PD-1", "EPAT", "Anti-PD-1", "EPAT", "Anti-PD-1+EPAT",
+  "Vehicle", "Vehicle", "Anti-PD-1", "Anti-PD-1", "Anti-PD-1",
+  "Anti-PD-1", "Anti-PD-1", "Vehicle", "EPAT", "Anti-PD-1+EPAT",
+  "Vehicle", "EPAT", "Anti-PD-1+EPAT", "Anti-PD-1+EPAT", "Anti-PD-1+EPAT",
+  "EPAT", "EPAT", "Anti-PD-1+EPAT", "Vehicle"
+)
 
 # Calculate the total sequencing reads per sample.
 library_sizes <- colSums(raw)

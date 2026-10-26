@@ -1,0 +1,2380 @@
+---
+title: "immune composition"
+output: html_document
+date: "2025-08-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+#install.packages("remotes")
+#remotes::install_github("omnideconv/immunedeconv")
+
+```
+```{r}
+library(immunedeconv)
+#take out outliers
+human_gene <- expr_human[, colnames(expr_human) != "AM6_7.1_S30"]
+#data must be on non-log scale 
+deconv_data <- 2^human_gene
+quantiseq <- deconvolute(deconv_data, "quantiseq")
+
+xcell <- deconvolute(deconv_data, "xcell")
+
+epic <- deconvolute(deconv_data, "epic")
+
+
+```
+```{r}
+library(reshape2)
+
+library(ggplot2)
+res_long <- melt(quantiseq, id.vars = "cell_type", variable.name = "Sample", value.name = "Fraction")
+
+ggplot(res_long, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (Quantiseq)", x = "Sample", y = "Cell Fraction") +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+res_long <- melt(xcell, id.vars = "cell_type", variable.name = "Sample", value.name = "Fraction")
+
+ggplot(res_long, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (Xcell)", x = "Sample", y = "Cell Fraction") +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplot(res_long, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (xCell)", x = "Sample", y = "Cell Fraction") +
+  theme_minimal(base_size = 10) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1),
+    legend.text = element_text(size = 6),        # Smaller text
+    legend.title = element_text(size = 8),       # Smaller legend title
+    legend.key.size = unit(0.3, "cm"),           # Smaller color boxes
+    legend.spacing.y = unit(0.1, "cm")           # Less vertical spacing
+  )
+
+
+
+res_long <- melt(epic, id.vars = "cell_type", variable.name = "Sample", value.name = "Fraction")
+
+ggplot(res_long, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (Epic)", x = "Sample", y = "Cell Fraction") +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r}
+library(immunedeconv)
+library(biomaRt)
+
+# Connect to Ensembl Mouse
+mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+
+# Get mapping from Ensembl to MGI
+gene_map <- getBM(attributes = c("ensembl_gene_id", "mgi_symbol"),
+                  mart = mart)
+
+# Merge with your data
+gene_map <- gene_map[!duplicated(gene_map$ensembl_gene_id), ]
+update_cpm_data$ensembl_gene_id <- rownames(update_cpm_data)
+
+# Join and replace rownames with MGI symbols
+library(dplyr)
+update_cpm_data_mgi <- left_join(update_cpm_data, gene_map, by = "ensembl_gene_id")
+
+# Keep only MGI symbol rows
+update_cpm_data_mgi <- update_cpm_data_mgi[!is.na(update_cpm_data_mgi$mgi_symbol), ]
+rownames(update_cpm_data_mgi) <- update_cpm_data_mgi$mgi_symbol
+update_cpm_data_mgi <- update_cpm_data_mgi[, !(colnames(update_cpm_data_mgi) %in% c("ensembl_gene_id", "mgi_symbol"))]
+
+
+deconv_data_mouse <- 2^(update_cpm_data_mgi)  
+
+# Run mmcp_counter
+mmcp_counter <- deconvolute_mouse(deconv_data_mouse, method = "mmcp_counter")
+
+#run base
+base <- deconvolute_mouse(deconv_data_mouse, method = "base")
+
+```
+
+```{r}
+#correlation uncharacterized cell from quatiseq and tumour purity 
+# extract the uncharacterized cell row
+uncharacterized <- quantiseq[quantiseq$cell_type == "uncharacterized cell", -1]
+
+# make it numeric vector
+uncharacterized <- as.numeric(uncharacterized)
+
+# align tumour purity by sample order
+purity <- update_tumor_purity[colnames(quantiseq)[-1]]
+
+# correlation
+cor_uncell <- cor(uncharacterized, purity, method = "pearson")
+
+# test with p-value
+cor_test <- cor.test(uncharacterized, purity, method = "pearson")
+
+cor_uncell
+cor_test
+
+```
+
+
+```{r}
+##PCA for base
+library(tidyverse)
+library(ggplot2)
+library(ggExtra)
+
+# Drop first column ("cell_type") and make sure the rest are numeric
+base_for_pca <- base %>%
+  select(-cell_type) %>%
+  mutate(across(everything(), ~ suppressWarnings(as.numeric(.)))) %>%
+  as.data.frame()
+
+# PCA on samples (transpose)
+pca_result <- prcomp(t(base_for_pca), scale. = TRUE)
+
+# Convert to data frame and add your existing metadata (same as before)
+pca_data <- as.data.frame(pca_result$x)
+pca_data$Group  <- update_group          # same approach you used previously
+pca_data$Day    <- update_batch_info
+pca_data$Sample <- colnames(base_for_pca)
+
+# Variance explained
+pca_var <- summary(pca_result)$importance[2, ]
+pc1_var <- round(pca_var[1] * 100, 1)
+pc2_var <- round(pca_var[2] * 100, 1)
+
+# PCA scatter (same styling/limits you used)
+p <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Group, shape = Day)) +
+  geom_point(size = 3) +
+  labs(
+    title = "PCA (BASE) labeled by treatment group and day",
+    x = paste0("PC1 (", pc1_var, "%)"),
+    y = paste0("PC2 (", pc2_var, "%)")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_text(size = 10),
+    legend.text  = element_text(size = 8)
+  )
+
+# Marginal densities (same as before)
+p_marginal <- ggMarginal(
+  p,
+  type = "density",
+  groupColour = TRUE,
+  groupFill   = TRUE
+)
+
+print(p_marginal)
+
+
+```
+```{r}
+## PCA for quanTIseq (same style as BASE)
+library(tidyverse)
+library(ggplot2)
+library(ggExtra)
+
+# Optionally drop 'uncharacterized cell'
+quantiseq_for_pca <- quantiseq %>%
+  filter(cell_type != "T cell CD4+ (non-regulatory)") %>%
+  select(-cell_type) %>%
+  mutate(across(everything(), ~ suppressWarnings(as.numeric(.)))) %>%
+  as.data.frame()
+
+# PCA on samples (transpose), same as BASE (scale.=TRUE)
+pca_q <- prcomp(t(quantiseq_for_pca), scale. = TRUE)
+
+# Build plotting df + metadata (same fields as your BASE plot)
+pca_q_df <- as.data.frame(pca_q$x)
+pca_q_df$Group  <- update_group              # same approach you used before
+pca_q_df$Day    <- update_batch_info
+pca_q_df$Sample <- colnames(quantiseq_for_pca)
+
+# Variance explained
+pca_q_var <- summary(pca_q)$importance[2, ]
+pc1_q_var <- round(pca_q_var[1] * 100, 1)
+pc2_q_var <- round(pca_q_var[2] * 100, 1)
+
+# Scatter + marginal densities (same styling as your BASE plot)
+p_q <- ggplot(pca_q_df, aes(x = PC1, y = PC2, color = Group, shape = Day)) +
+  geom_point(size = 3) +
+  labs(
+    title = "PCA (quanTIseq) labeled by treatment group and day",
+    x = paste0("PC1 (", pc1_q_var, "%)"),
+    y = paste0("PC2 (", pc2_q_var, "%)")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_text(size = 10),
+    legend.text  = element_text(size = 8)
+  )
+
+p_q_marginal <- ggMarginal(
+  p_q,
+  type = "density",
+  groupColour = TRUE,
+  groupFill   = TRUE
+)
+
+print(p_q_marginal)
+
+
+```
+
+
+
+```{r}
+library(reshape2)
+
+library(ggplot2)
+res_long <- melt(mmcp_counter, id.vars = "cell_type", variable.name = "Sample", value.name = "Fraction")
+
+ggplot(res_long, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (mmcp_counter)", x = "Sample", y = "Cell Fraction") +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+library(reshape2)
+library(dplyr)
+library(ggplot2)
+
+# Assume mmcp_counter has first column "cell_type" and remaining columns are samples
+
+# 1) Convert to matrix and scale each column to sum to 1
+mat <- as.matrix(mmcp_counter[,-1])
+mat_frac <- sweep(mat, 2, colSums(mat, na.rm = TRUE), "/")
+
+# 2) Combine back into a dataframe with cell_type
+mmcp_frac <- cbind(cell_type = mmcp_counter$cell_type, as.data.frame(mat_frac))
+
+# 3) Reshape to long format
+res_long_frac <- melt(mmcp_frac, id.vars = "cell_type",
+                      variable.name = "Sample", value.name = "Fraction")
+
+# 4) Plot as stacked bars (fractions)
+ggplot(res_long_frac, aes(x = Sample, y = Fraction, fill = cell_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Immune Cell Composition by Sample (mmcp_counter)",
+       x = "Sample", y = "Fraction of total abundance") +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.key.size = grid::unit(0.3, "cm"),
+        legend.text = element_text(size = 7))
+
+
+```
+
+
+```{r}
+library(pheatmap)
+library(tibble)
+
+mat <- base %>%
+  column_to_rownames("cell_type") %>%
+  as.matrix()
+
+stopifnot(length(update_group) == ncol(mat))
+ann_col <- data.frame(Group = update_group, row.names = colnames(mat))
+
+pheatmap(
+  mat,                      # raw values
+  scale = "row",            # z-score by row
+  annotation_col = ann_col,
+  show_colnames = TRUE,
+  show_rownames = TRUE,
+  fontsize_row = 8,
+  fontsize_col = 7,
+  cluster_cols = FALSE,     # keep sample order; no tree on x-axis
+  clustering_method = "average",
+  border_color = NA,
+  main = "Immune Cell Composition (BASE)"
+)
+
+
+
+```
+
+```{r}
+library(limma)
+library(tibble)
+library(dplyr)
+
+# -----------------------
+# 1. Prepare matrices
+# -----------------------
+# Gene expression: log2CPM matrix (genes x samples)
+logCPM <- update_cpm_data
+
+# Cell fractions (BASE): convert to matrix with samples as rows
+cellfrac <- base %>%
+  column_to_rownames("cell_type") %>%
+  as.matrix()
+cellfrac <- t(cellfrac)   # rows = samples, cols = cell types
+
+# Align sample order
+samples <- Reduce(intersect, list(colnames(logCPM), rownames(cellfrac)))
+logCPM  <- logCPM[, samples, drop = FALSE]
+cellfrac <- cellfrac[samples, , drop = FALSE]
+
+group  <- factor(update_group)[match(samples, colnames(update_cpm_data))]
+purity <- as.numeric(update_tumor_purity)[match(samples, colnames(update_cpm_data))]
+
+# Make Vehicle reference
+group <- relevel(group, ref = "Vehicle")
+
+# -----------------------
+# 2. Build design matrices
+# -----------------------
+
+# WITH tumor purity
+design_with <- model.matrix(~ 0 + group + cellfrac + purity)
+colnames(design_with) <- make.names(colnames(design_with))
+
+#withour purity and immune cell composition
+design_wo <- model.matrix(~ 0 + group)
+# WITHOUT tumor purity
+#design_wo <- model.matrix(~ 0 + group + cellfrac)
+colnames(design_wo) <- make.names(colnames(design_wo))
+
+# -----------------------
+# 3. Fit limma models
+# -----------------------
+fit_w  <- lmFit(logCPM, design_with)
+fit_wo <- lmFit(logCPM, design_wo)
+
+# -----------------------
+# 4. Contrasts for treatment effects
+# -----------------------
+contr_with <- makeContrasts(
+  AntiPD1_vs_Vehicle   = groupAnti.PD.1      - groupVehicle,
+  EPAT_vs_Vehicle      = groupEPAT           - groupVehicle,
+  Combo_vs_Vehicle     = groupAnti.PD.1.EPAT - groupVehicle,
+  AntiPD1_vs_EPAT      = groupAnti.PD.1      - groupEPAT,
+  levels = design_with
+)
+
+contr_wo <- makeContrasts(
+  AntiPD1_vs_Vehicle   = groupAnti.PD.1      - groupVehicle,
+  EPAT_vs_Vehicle      = groupEPAT           - groupVehicle,
+  Combo_vs_Vehicle     = groupAnti.PD.1.EPAT - groupVehicle,
+  AntiPD1_vs_EPAT      = groupAnti.PD.1      - groupEPAT,
+  levels = design_wo
+)
+
+fit_wc  <- eBayes(contrasts.fit(fit_w,  contr_with), robust = TRUE)
+fit_woc <- eBayes(contrasts.fit(fit_wo, contr_wo),   robust = TRUE)
+
+# -----------------------
+# 5. Extract results
+# -----------------------
+res_with_AntiPD1_vs_Vehicle <- topTable(fit_wc, coef = "AntiPD1_vs_Vehicle", number = Inf)
+res_wo_AntiPD1_vs_Vehicle   <- topTable(fit_woc, coef = "AntiPD1_vs_Vehicle", number = Inf)
+
+# Similarly:
+# res_with_EPAT_vs_Vehicle   <- topTable(fit_wc, "EPAT_vs_Vehicle", number = Inf)
+# res_wo_EPAT_vs_Vehicle     <- topTable(fit_woc, "EPAT_vs_Vehicle", number = Inf)
+# ...
+
+```
+
+```{r}
+library(ggplot2)
+
+plot_volcano <- function(res, title) {
+  res$CellType <- rownames(res)
+  ggplot(res, aes(x = logFC, y = -log10(adj.P.Val))) +
+    geom_point(aes(color = adj.P.Val < 0.05)) +
+    geom_text(aes(label = ifelse(adj.P.Val < 0.05, CellType, "")),
+              vjust = 1.5, size = 3) +
+    labs(title = title, x = "log2 Fold Change", y = "-log10 FDR") +
+    theme_minimal()
+}
+
+plot_volcano(res_with, "Anti-PD-1 vs Vehicle (With Purity)")
+plot_volcano(res_without, "Anti-PD-1 vs Vehicle (Without Purity)")
+
+
+# Collect all contrasts
+logfc_with <- fit_wc$coefficients
+logfc_without <- fit_woc$coefficients
+
+library(pheatmap)
+
+pheatmap(logfc_with, main = "logFC (With Purity)",
+         scale = "row", cluster_rows = FALSE, cluster_cols = FALSE)
+pheatmap(logfc_without, main = "logFC (Without Purity)",
+         scale = "row", cluster_rows = FALSE, cluster_cols = FALSE)
+
+```
+
+```{r}
+#Box and whiskers plot from base output
+library(reshape2)
+library(ggplot2)
+
+# 1) Reshape base into long format
+base_long <- melt(base, id.vars = "cell_type",
+                  variable.name = "Sample", value.name = "Score")
+
+# 2) Attach treatment group labels
+sample_df <- data.frame(Sample = colnames(base)[-1],
+                        Group  = update_group,
+                        check.names = FALSE)
+base_long <- merge(base_long, sample_df, by = "Sample")
+
+# 3) Box & whisker plots with y limit [-2, 2]
+ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  facet_wrap(~ cell_type, scales = "free_y", ncol = 4) +
+  coord_cartesian(ylim = c(-2, 2)) +   # <- fixed y-axis range
+  theme_minimal(base_size = 11) +
+  labs(title = "Cell-type enrichment scores (BASE output)",
+       x = "Treatment group", y = "Enrichment score") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+```
+
+```{r}
+# ===== 0) Libraries =====
+library(dplyr)
+library(tidyr)
+library(reshape2)
+library(ggplot2)
+library(rstatix)    # pairwise_wilcox_test, kruskal_test (optional)
+library(ggpubr)     # stat_pvalue_manual
+library(ggforce)    # facet_wrap_paginate
+
+# Assumes:
+# - 'base' = wide matrix/data.frame with first column 'cell_type' and other columns as samples
+# - 'update_group' = vector of group labels for columns of 'base' (excluding 'cell_type')
+
+# ===== 1) Long-format data with group labels =====
+base_long <- melt(base, id.vars = "cell_type",
+                  variable.name = "Sample", value.name = "Score")
+
+sample_df <- data.frame(
+  Sample = colnames(base)[-1],
+  Group  = update_group,
+  check.names = FALSE
+)
+
+base_long <- merge(base_long, sample_df, by = "Sample")
+
+# Order groups (Vehicle first)
+base_long$Group <- factor(
+  base_long$Group,
+  levels = c("Vehicle", "Anti-PD-1", "EPAT", "Anti-PD-1+EPAT")
+)
+
+# ===== 2) (Optional) Overall Kruskal–Wallis per cell type =====
+kw <- base_long %>%
+  group_by(cell_type) %>%
+  kruskal_test(Score ~ Group) %>%
+  mutate(q = p.adjust(p, "BH"))
+
+# ===== 3) Pairwise Wilcoxon: ONLY vs Vehicle within each cell type =====
+pw_vehicle <- base_long %>%
+  group_by(cell_type) %>%
+  pairwise_wilcox_test(Score ~ Group, p.adjust.method = "BH") %>%
+  ungroup() %>%
+  # keep only comparisons where one side is Vehicle
+  filter(group1 == "Vehicle" | group2 == "Vehicle") %>%
+  # ensure Vehicle is always group1 for clean bracket placement
+  mutate(
+    group1 = ifelse(group1 == "Vehicle", group1, group2),
+    group2 = ifelse(group1 == "Vehicle", group2, group1)
+  )
+
+# Keep only significant pairs for annotation (change threshold if desired)
+pw_sig <- pw_vehicle %>%
+  filter(!is.na(p.adj) & p.adj < 0.05)
+
+# ===== 4) Annotation y-positions (respect fixed ylim [-2, 2]) =====
+start_y <- 1.8
+step_y  <- 0.12
+
+ann <- pw_sig %>%
+  group_by(cell_type) %>%
+  arrange(p.adj) %>%
+  mutate(
+    y.position = start_y + (row_number() - 1) * step_y,
+    label = p.adj.signif
+  ) %>%
+  ungroup() %>%
+  select(cell_type, group1, group2, y.position, p, p.adj, p.adj.signif, label)
+
+library(ggforce)
+
+# Page 1
+p1 <- ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  facet_wrap_paginate(~ cell_type, scales = "free_y", ncol = 4, nrow = 2, page = 1) +
+  coord_cartesian(ylim = c(-2, 2)) +
+  labs(
+    title = "BASE — Cell-type enrichment scores (Page 1 of 2)",
+    x = "Treatment group", y = "Enrichment score"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none",
+    strip.text = element_text(size = 7)  # smaller facet titles
+  )
+
+if (nrow(ann) > 0) {
+  p1 <- p1 + stat_pvalue_manual(
+    data = ann,
+    label = "label",
+    tip.length = 0.01,
+    bracket.size = 0.35,
+    hide.ns = TRUE
+  )
+}
+
+# Page 2
+p2 <- ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  facet_wrap_paginate(~ cell_type, scales = "free_y", ncol = 4, nrow = 2, page = 2) +
+  coord_cartesian(ylim = c(-2, 2)) +
+  labs(
+    title = "BASE — Cell-type enrichment scores (Page 2 of 2)",
+    x = "Treatment group", y = "Enrichment score"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none",
+    strip.text = element_text(size = 8)  # smaller facet titles
+  )
+
+if (nrow(ann) > 0) {
+  p2 <- p2 + stat_pvalue_manual(
+    data = ann,
+    label = "label",
+    tip.length = 0.01,
+    bracket.size = 0.35,
+    hide.ns = TRUE
+  )
+}
+
+# Render
+p1
+p2
+
+
+
+
+```
+
+
+
+```{r}
+library(dplyr)
+
+# assume base_long has: cell_type, Sample, Score, Group
+comparisons <- setdiff(unique(base_long$Group), "Vehicle")
+
+# loop over all cell types and all comparisons vs Vehicle
+pvals <- base_long %>%
+  group_by(cell_type) %>%
+  group_modify(~{
+    v <- .x$Score[.x$Group == "Vehicle"]
+    out <- lapply(comparisons, function(g){
+      x <- .x$Score[.x$Group == g]
+      p <- tryCatch(wilcox.test(x, v, exact = FALSE)$p.value,
+                    error = function(e) NA_real_)
+      data.frame(Comparison = paste(g, "vs Vehicle"), p_value = p)
+    })
+    do.call(rbind, out)
+  }) %>%
+  ungroup()
+
+pvals
+
+
+```
+
+```{r}
+pvals <- pvals %>%
+  mutate(sig = case_when(
+    is.na(p_value)   ~ "",
+    p_value < 1e-4   ~ "****",
+    p_value < 1e-3   ~ "***",
+    p_value < 1e-2   ~ "**",
+    p_value < 5e-2   ~ "*",
+    TRUE             ~ "ns"
+  ))
+
+pvals
+sig_pvals <- pvals %>%
+  dplyr::filter(!is.na(p_value), p_value < 0.05) %>%
+  dplyr::arrange(cell_type, p_value) %>%
+  dplyr::select(cell_type, Comparison, p_value, sig)
+
+sig_pvals
+
+```
+
+```{r}
+
+```
+
+```{r}
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+
+# ---- 1) Prepare quantiseq results ----
+# Assume quantiseq result is in a data.frame called `quantiseq`
+# Format: first column = "cell_type", remaining columns = samples
+# Example: rows = B cell, CD8 T cell, NK cell, etc.
+
+quantiseq_long <- melt(quantiseq, id.vars = "cell_type",
+                       variable.name = "Sample", value.name = "Fraction")
+
+# Add treatment group info
+sample_df <- data.frame(Sample = colnames(quantiseq)[-1],
+                        Group  = update_group,
+                        check.names = FALSE)
+
+quantiseq_long <- merge(quantiseq_long, sample_df, by = "Sample")
+
+# ---- 2) Plot box & whisker plots ----
+ggplot(quantiseq_long, aes(x = Group, y = Fraction, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  facet_wrap(~ cell_type, ncol = 3, scales = "free_y") +
+  theme_minimal(base_size = 11) +
+  labs(title = "Immune cell fractions (quanTIseq)",
+       x = "Treatment group", y = "Cell fraction") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+```
+```{r}
+library(dplyr)
+library(tidyr)
+
+# 1) Long format + attach groups
+qs_long <- quantiseq %>%
+  rename(cell_type = 1) %>%                 # first column is the cell type name
+  pivot_longer(-cell_type, names_to = "Sample", values_to = "Score") %>%
+  mutate(Sample = as.character(Sample))
+
+sample_df <- data.frame(
+  Sample = colnames(quantiseq)[-1],
+  Group  = update_group,
+  check.names = FALSE
+)
+
+qs_long <- qs_long %>%
+  inner_join(sample_df, by = "Sample") %>%
+  mutate(Group = factor(Group,
+                        levels = c("Vehicle","Anti-PD-1","EPAT","Anti-PD-1+EPAT")))
+
+# 2) Define comparisons vs Vehicle
+comparisons <- setdiff(levels(qs_long$Group), "Vehicle")
+
+# 3) Per–cell type Wilcoxon tests (fractions can be used directly)
+pvals_qs <- qs_long %>%
+  group_by(cell_type) %>%
+  group_modify(~{
+    v <- .x$Score[.x$Group == "Vehicle"]
+    out <- lapply(comparisons, function(g){
+      x <- .x$Score[.x$Group == g]
+      p <- tryCatch(wilcox.test(x, v, exact = FALSE)$p.value,
+                    error = function(e) NA_real_)
+      data.frame(Comparison = paste(g, "vs Vehicle"), p_value = p)
+    })
+    bind_rows(out)
+  }) %>%
+  ungroup() %>%
+  mutate(
+    FDR = p.adjust(p_value, method = "BH"),
+    sig = case_when(
+      is.na(p_value)   ~ "",
+      p_value < 1e-4   ~ "****",
+      p_value < 1e-3   ~ "***",
+      p_value < 1e-2   ~ "**",
+      p_value < 5e-2   ~ "*",
+      TRUE             ~ "ns"
+    )
+  )
+
+# 4) View only significant (p < 0.05)
+pvals_qs_sig <- pvals_qs %>%
+  filter(!is.na(p_value), p_value < 0.05) %>%
+  arrange(cell_type, p_value) %>%
+  select(cell_type, Comparison, p_value, sig)
+
+pvals_qs_sig
+
+```
+
+```{r}
+# # ---- 0) Libraries ----
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(rstatix)
+library(ggpubr)
+library(ggforce)
+
+to_drop <- c("T cell CD4+ (non-regulatory)")
+quantiseq_f <- quantiseq %>% dplyr::filter(!cell_type %in% to_drop)
+
+# ---- 1) Long-format + group labels ----
+quantiseq_long <- melt(quantiseq_f, id.vars = "cell_type",
+                       variable.name = "Sample", value.name = "Fraction")
+
+sample_df <- data.frame(
+  Sample = colnames(quantiseq)[-1],
+  Group  = update_group,    # <-- make sure this matches order of columns
+  check.names = FALSE
+)
+
+quantiseq_long <- merge(quantiseq_long, sample_df, by = "Sample")
+
+# Order groups (Vehicle first)
+quantiseq_long$Group <- factor(
+  quantiseq_long$Group,
+  levels = c("Vehicle", "Anti-PD-1", "EPAT", "Anti-PD-1+EPAT")
+)
+
+# ---- 2) Stats ----
+kw <- quantiseq_long %>%
+  group_by(cell_type) %>%
+  kruskal_test(Fraction ~ Group) %>%
+  mutate(q = p.adjust(p, "BH"))
+
+pw_vehicle <- quantiseq_long %>%
+  group_by(cell_type) %>%
+  pairwise_wilcox_test(Fraction ~ Group, p.adjust.method = "BH") %>%
+  ungroup() %>%
+  filter(group1 == "Vehicle" | group2 == "Vehicle") %>%
+  mutate(
+    group1 = ifelse(group1 == "Vehicle", group1, group2),
+    group2 = ifelse(group1 == "Vehicle", group2, group1)
+  )
+
+pw_sig <- pw_vehicle %>% filter(!is.na(p.adj) & p.adj < 0.05)
+
+# annotation positions for fractions in [0,1]
+start_y <- 0.9
+step_y  <- 0.04
+ann <- pw_sig %>%
+  group_by(cell_type) %>%
+  arrange(p.adj) %>%
+  mutate(
+    y.position = start_y + (row_number() - 1) * step_y,
+    label = p.adj.signif
+  ) %>%
+  ungroup()
+
+# ---- 3) Plots ----
+# --- compute per-facet y positions for brackets (free_y) ---
+facet_tops <- quantiseq_long %>%
+  group_by(cell_type) %>%
+  summarise(ymax = max(Fraction, na.rm = TRUE), .groups = "drop") %>%
+  mutate(
+    ymax    = ifelse(is.finite(ymax) & ymax > 0, ymax, 1e-6),
+    start_y = ymax * 1.05,      # push higher above whiskers
+    step_y  = pmax(ymax * 0.08, 0.02)  # more spacing
+  )
+
+ann <- pw_sig %>%
+  left_join(facet_tops, by = "cell_type") %>%
+  group_by(cell_type) %>%
+  arrange(p.adj) %>%
+  mutate(
+    y.position = start_y + (row_number() - 1) * step_y,
+    label = p.adj.signif
+  ) %>%
+  ungroup()
+
+
+# --- Page 1 (same format as your top plot, with significance) ---
+p1 <- ggplot(quantiseq_long, aes(x = Group, y = Fraction, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  ggforce::facet_wrap_paginate(~ cell_type, ncol = 3, nrow = 2, scales = "free_y", page = 1) +
+  theme_minimal(base_size = 11) +
+  labs(title = "Immune cell fractions (quanTIseq)",
+       x = "Treatment group", y = "Cell fraction") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+if (nrow(ann) > 0) {
+  p1 <- p1 + ggpubr::stat_pvalue_manual(
+    data = ann,
+    label = "label",
+    tip.length = 0.01,
+    bracket.size = 0.35,
+    hide.ns = TRUE
+  )
+}
+
+# --- Page 2 (same format) ---
+p2 <- ggplot(quantiseq_long, aes(x = Group, y = Fraction, fill = Group)) +
+  geom_boxplot(outlier.size = 0.6) +
+  ggforce::facet_wrap_paginate(~ cell_type, ncol = 3, nrow = 2, scales = "free_y", page = 2) +
+  theme_minimal(base_size = 11) +
+  labs(title = "Immune cell fractions (quanTIseq)",
+       x = "Treatment group", y = "Cell fraction") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+if (nrow(ann) > 0) {
+  p2 <- p2 + ggpubr::stat_pvalue_manual(
+    data = ann,
+    label = "label",
+    tip.length = 0.01,
+    bracket.size = 0.35,
+    hide.ns = TRUE
+  )
+}
+
+p1
+p2
+
+
+
+```
+
+
+```{r}
+#base p-value distribution
+library(ggplot2)
+
+# Extract p-values
+pvals_with <- res_with_AntiPD1_vs_Vehicle$P.Value
+pvals_wo   <- res_wo_AntiPD1_vs_Vehicle$P.Value
+
+# Combine into one data frame
+df_p <- data.frame(
+  pval = c(pvals_with, pvals_wo),
+  Model = rep(c("With purity", "Without purity and BASE"),
+              c(length(pvals_with), length(pvals_wo)))
+)
+
+# Anti-PD-1 vs Vehicle Histogram of p-values
+ggplot(df_p, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (Anti-PD-1 vs Vehicle) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+## EPAT vs Vehicle
+res_with_EPAT    <- topTable(fit_wc,  coef = "EPAT_vs_Vehicle",    number = Inf)
+res_without_EPAT <- topTable(fit_woc, coef = "EPAT_vs_Vehicle",    number = Inf)
+
+pvals_with_EPAT <- res_with_EPAT$P.Value
+pvals_wo_EPAT   <- res_without_EPAT$P.Value
+
+df_p_EPAT <- data.frame(
+  pval  = c(pvals_with_EPAT, pvals_wo_EPAT),
+  Model = c(rep("With purity",    length(pvals_with_EPAT)),
+            rep("Without purity and BASE", length(pvals_wo_EPAT)))
+)
+
+ggplot(df_p_EPAT, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (EPAT vs Vehicle) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+## Anti-PD-1 + EPAT vs Vehicle
+res_with_Comb    <- topTable(fit_wc,  coef = "Combo_vs_Vehicle", number = Inf)
+res_without_Comb <- topTable(fit_woc, coef = "Combo_vs_Vehicle", number = Inf)
+
+pvals_with_Comb <- res_with_Comb$P.Value
+pvals_wo_Comb   <- res_without_Comb$P.Value
+
+df_p_Comb <- data.frame(
+  pval  = c(pvals_with_Comb, pvals_wo_Comb),
+  Model = c(rep("With purity",    length(pvals_with_Comb)),
+            rep("Without purity and BASE", length(pvals_wo_Comb)))
+)
+
+ggplot(df_p_Comb, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (Anti-PD-1 + EPAT vs Vehicle) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+## Refit contrasts for the extra pairwise comparisons
+contr_extra_with <- makeContrasts(
+  Combo_vs_EPAT      = groupAnti.PD.1.EPAT - groupEPAT,
+  AntiPD1_vs_EPAT    = groupAnti.PD.1      - groupEPAT,   # already had this above; safe to reuse
+  Combo_vs_AntiPD1   = groupAnti.PD.1.EPAT - groupAnti.PD.1,
+  levels = design_with
+)
+fit_wc_extra <- eBayes(contrasts.fit(fit_w, contr_extra_with), robust = TRUE)
+
+contr_extra_wo <- makeContrasts(
+  Combo_vs_EPAT      = groupAnti.PD.1.EPAT - groupEPAT,
+  AntiPD1_vs_EPAT    = groupAnti.PD.1      - groupEPAT,   # already had this above; safe to reuse
+  Combo_vs_AntiPD1   = groupAnti.PD.1.EPAT - groupAnti.PD.1,
+  levels = design_wo
+)
+fit_woc_extra <- eBayes(contrasts.fit(fit_wo, contr_extra_wo), robust = TRUE)
+
+#Anti-PD-1 + EPAT vs EPAT
+res_with_Combo_vs_EPAT    <- topTable(fit_wc_extra,  coef = "Combo_vs_EPAT", number = Inf)
+res_without_Combo_vs_EPAT <- topTable(fit_woc_extra, coef = "Combo_vs_EPAT", number = Inf)
+
+pvals_with_Combo_vs_EPAT <- res_with_Combo_vs_EPAT$P.Value
+pvals_wo_Combo_vs_EPAT   <- res_without_Combo_vs_EPAT$P.Value
+
+df_p_Combo_vs_EPAT <- data.frame(
+  pval  = c(pvals_with_Combo_vs_EPAT, pvals_wo_Combo_vs_EPAT),
+  Model = c(rep("With purity",    length(pvals_with_Combo_vs_EPAT)),
+            rep("Without purity and BASE", length(pvals_wo_Combo_vs_EPAT)))
+)
+
+ggplot(df_p_Combo_vs_EPAT, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (Anti-PD-1 + EPAT vs EPAT) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+#Anti-PD-1 vs EPAT
+res_with_AntiPD1_vs_EPAT    <- topTable(fit_wc_extra,  coef = "AntiPD1_vs_EPAT", number = Inf)
+res_without_AntiPD1_vs_EPAT <- topTable(fit_woc_extra, coef = "AntiPD1_vs_EPAT", number = Inf)
+
+pvals_with_AntiPD1_vs_EPAT <- res_with_AntiPD1_vs_EPAT$P.Value
+pvals_wo_AntiPD1_vs_EPAT   <- res_without_AntiPD1_vs_EPAT$P.Value
+
+df_p_AntiPD1_vs_EPAT <- data.frame(
+  pval  = c(pvals_with_AntiPD1_vs_EPAT, pvals_wo_AntiPD1_vs_EPAT),
+  Model = c(rep("With purity",    length(pvals_with_AntiPD1_vs_EPAT)),
+            rep("Without purity and BASE", length(pvals_wo_AntiPD1_vs_EPAT)))
+)
+
+ggplot(df_p_AntiPD1_vs_EPAT, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (Anti-PD-1 vs EPAT) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+#Anti-PD-1 + EPAT vs Anti-PD-1
+res_with_Combo_vs_AntiPD1    <- topTable(fit_wc_extra,  coef = "Combo_vs_AntiPD1", number = Inf)
+res_without_Combo_vs_AntiPD1 <- topTable(fit_woc_extra, coef = "Combo_vs_AntiPD1", number = Inf)
+
+pvals_with_Combo_vs_AntiPD1 <- res_with_Combo_vs_AntiPD1$P.Value
+pvals_wo_Combo_vs_AntiPD1   <- res_without_Combo_vs_AntiPD1$P.Value
+
+df_p_Combo_vs_AntiPD1 <- data.frame(
+  pval  = c(pvals_with_Combo_vs_AntiPD1, pvals_wo_Combo_vs_AntiPD1),
+  Model = c(rep("With purity",    length(pvals_with_Combo_vs_AntiPD1)),
+            rep("Without purity and BASE", length(pvals_wo_Combo_vs_AntiPD1)))
+)
+
+ggplot(df_p_Combo_vs_AntiPD1, aes(x = pval, fill = Model)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(title = "P-value distribution (Anti-PD-1 + EPAT vs Anti-PD-1) - BASE",
+       x = "P-value", y = "Count") +
+  scale_fill_manual(values = c("steelblue", "tomato"))
+
+```
+
+
+```{r}
+library(ggplot2)
+
+plot_volcano_with <- function(res_with, title_text) {
+  res <- res_with
+  res$CellType <- rownames(res)
+
+  res$Significance <- "Middle"
+  res$Significance[res$logFC > 0.585 & res$P.Value < 0.05] <- "Up"
+  res$Significance[res$logFC < -0.585 & res$P.Value < 0.05] <- "Down"
+
+  ggplot(res, aes(x = logFC, y = -log10(P.Value), color = Significance)) +
+    geom_point(alpha = 0.7, size = 2) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
+    geom_vline(xintercept = c(-0.585, 0.585), linetype = "dashed", color = "grey40") +
+    scale_color_manual(values = c("Up"="red", "Down"="blue", "Middle"="grey")) +
+    labs(title = title_text,
+         x = "log2 Fold Change",
+         y = "-log10 P-value") +
+    xlim(-5, 5) +
+    ylim(0, 6) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+}
+
+
+## Anti-PD-1 vs Vehicle
+plot_volcano_with(res_with_AntiPD1_vs_Vehicle,
+                  "Volcano: Anti-PD-1 vs Vehicle (BASE, with purity)")
+
+## EPAT vs Vehicle
+plot_volcano_with(res_with_EPAT,
+                  "Volcano: EPAT vs Vehicle (BASE, with purity)")
+
+## Anti-PD-1 + EPAT vs Vehicle
+plot_volcano_with(res_with_Comb,
+                  "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)")
+
+## Anti-PD-1 + EPAT vs EPAT
+plot_volcano_with(res_with_Combo_vs_EPAT,
+                  "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, with purity)")
+
+## Anti-PD-1 vs EPAT
+plot_volcano_with(res_with_AntiPD1_vs_EPAT,
+                  "Volcano: Anti-PD-1 vs EPAT (BASE, with purity)")
+
+## Anti-PD-1 + EPAT vs Anti-PD-1
+plot_volcano_with(res_with_Combo_vs_AntiPD1,
+                  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, with purity)")
+
+```
+
+
+
+```{r}
+library(ggplot2)
+
+plot_volcano_wo <- function(res_wo, title_text) {
+  res <- res_wo
+  res$CellType <- rownames(res)
+
+  res$Significance <- "Middle"
+  res$Significance[res$logFC >  0.585 & res$P.Value < 0.05] <- "Up"
+  res$Significance[res$logFC < -0.585 & res$P.Value < 0.05] <- "Down"
+
+  ggplot(res, aes(x = logFC, y = -log10(P.Value), color = Significance)) +
+    geom_point(alpha = 0.7, size = 2) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
+    geom_vline(xintercept = c(-0.585, 0.585), linetype = "dashed", color = "grey40") +
+    scale_color_manual(values = c("Up"="red", "Down"="blue", "Middle"="grey")) +
+    labs(title = title_text,
+         x = "log2 Fold Change",
+         y = "-log10 P-value") +
+    xlim(-5, 5) +
+    ylim(0, 6) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+}
+
+# -----------------------
+# Volcano plots (without purity)
+# -----------------------
+
+## Anti-PD-1 vs Vehicle
+plot_volcano_wo(res_wo_AntiPD1_vs_Vehicle,
+                "Volcano: Anti-PD-1 vs Vehicle (without BASE, without purity)")
+
+## EPAT vs Vehicle
+plot_volcano_wo(res_without_EPAT,
+                "Volcano: EPAT vs Vehicle (without BASE, without purity)")
+
+## Anti-PD-1 + EPAT vs Vehicle
+plot_volcano_wo(res_without_Comb,
+                "Volcano: Anti-PD-1 + EPAT vs Vehicle (without BASE, without purity)")
+
+## Anti-PD-1 + EPAT vs EPAT
+plot_volcano_wo(res_without_Combo_vs_EPAT,
+                "Volcano: Anti-PD-1 + EPAT vs EPAT (without BASE, without purity)")
+
+## Anti-PD-1 vs EPAT
+plot_volcano_wo(res_without_AntiPD1_vs_EPAT,
+                "Volcano: Anti-PD-1 vs EPAT (without BASE, without purity)")
+
+## Anti-PD-1 + EPAT vs Anti-PD-1
+plot_volcano_wo(res_without_Combo_vs_AntiPD1,
+                "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (without BASE, without purity)")
+
+```
+
+```{r}
+plot_volcano_highlights <- function(
+  res_with,
+  title_text,
+  anti_ids,
+  neg_ids,
+  anti_color = "#E69F00",  # positive control
+  neg_color  = "#56B4E9",  # negative control
+  other_color = "grey80",
+  point_size = 2,
+  alpha = 0.7,
+  xlim_vals = c(-5, 5),
+  ylim_vals = c(0, 6)
+) {
+  res <- res_with
+
+  # Ensure a GeneID column
+  if ("ensembl_gene_id" %in% colnames(res)) {
+    res$GeneID <- res$ensembl_gene_id
+  } else {
+    res$GeneID <- rownames(res)
+  }
+
+  # Base plot with background points
+  p <- ggplot(res, aes(x = logFC, y = -log10(P.Value))) +
+    geom_point(color = other_color, size = point_size, alpha = alpha) +
+    labs(
+      title = title_text,
+      x = "log2 Fold Change",
+      y = "-log10 P-value"
+    ) +
+    coord_cartesian(xlim = xlim_vals, ylim = ylim_vals, expand = FALSE) +
+    theme_minimal(base_size = 13)
+
+  # Negative control (drawn first)
+  p <- p + geom_point(
+    data = subset(res, GeneID %in% neg_ids),
+    aes(x = logFC, y = -log10(P.Value)),
+    color = neg_color,
+    size = point_size + 0.8,
+    alpha = 0.9
+  )
+
+  # Positive control (drawn last → always on top)
+  p <- p + geom_point(
+    data = subset(res, GeneID %in% anti_ids),
+    aes(x = logFC, y = -log10(P.Value)),
+    color = anti_color,
+    size = point_size + 1.0,
+    alpha = 1
+  )
+
+  p
+}
+
+plot_volcano_highlights(
+  res_with_Comb,
+  "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+## Example
+plot_volcano_highlights(
+  res_with_AntiPD1_vs_Vehicle,
+  "Volcano: Anti-PD-1 vs Vehicle (BASE,with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+
+plot_volcano_highlights(
+  res_with_EPAT,
+  "Volcano: EPAT vs Vehicle (BASE, with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+plot_volcano_highlights(
+  res_with_Combo_vs_AntiPD1,
+  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+plot_volcano_highlights(
+  res_with_Combo_vs_EPAT,
+  "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+plot_volcano_highlights(
+  res_with_AntiPD1_vs_EPAT,
+  "Volcano: Anti-PD-1 vs EPAT (BASE, with purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+```
+
+```{r}
+# --- Base WITHOUT purity: highlight-only volcano (pos vs neg controls) ---
+plot_volcano_wo_highlights <- function(
+  res_wo,
+  title_text,
+  anti_ids,
+  neg_ids,
+  anti_color = "#E69F00",  # positive control
+  neg_color  = "#56B4E9",  # negative control
+  other_color = "grey80",
+  point_size = 2,
+  alpha = 0.7,
+  xlim_vals = c(-5, 5),
+  ylim_vals = c(0, 6),
+  pval_cut = 0.05,
+  lfc_cut  = 0.585
+) {
+  res <- res_wo
+
+  # Ensure a GeneID column
+  if ("ensembl_gene_id" %in% colnames(res)) {
+    res$GeneID <- res$ensembl_gene_id
+  } else {
+    res$GeneID <- rownames(res)
+  }
+
+  p <- ggplot(res, aes(x = logFC, y = -log10(P.Value))) +
+    # background
+    geom_point(color = other_color, size = point_size, alpha = alpha) +
+    # thresholds
+    labs(title = title_text, x = "log2 Fold Change", y = "-log10 P-value") +
+    coord_cartesian(xlim = xlim_vals, ylim = ylim_vals, expand = FALSE) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+
+  # draw negatives first
+  p <- p + geom_point(
+    data = subset(res, GeneID %in% neg_ids),
+    aes(x = logFC, y = -log10(P.Value)),
+    color = neg_color, size = point_size + 0.8, alpha = 0.9
+  )
+
+  # draw positives last (on top)
+  p <- p + geom_point(
+    data = subset(res, GeneID %in% anti_ids),
+    aes(x = logFC, y = -log10(P.Value)),
+    color = anti_color, size = point_size + 1.0, alpha = 1
+  )
+
+  p
+}
+## Anti-PD-1 + EPAT vs Vehicle
+plot_volcano_wo_highlights(
+  res_without_Comb,
+  "Volcano: Anti-PD-1 + EPAT vs Vehicle (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+## Anti-PD-1 vs Vehicle
+plot_volcano_wo_highlights(
+  res_wo_AntiPD1_vs_Vehicle,
+  "Volcano: Anti-PD-1 vs Vehicle (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+
+## EPAT vs Vehicle
+plot_volcano_wo_highlights(
+  res_without_EPAT,
+  "Volcano: EPAT vs Vehicle (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+## Anti-PD-1 + EPAT vs Anti-PD-1
+plot_volcano_wo_highlights(
+  res_without_Combo_vs_AntiPD1,
+  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+## Anti-PD-1 + EPAT vs EPAT
+plot_volcano_wo_highlights(
+  res_without_Combo_vs_EPAT,
+  "Volcano: Anti-PD-1 + EPAT vs EPAT (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+
+## Anti-PD-1 vs EPAT
+plot_volcano_wo_highlights(
+  res_without_AntiPD1_vs_EPAT,
+  "Volcano: Anti-PD-1 vs EPAT (without BASE, without purity)",
+  anti_ids = antiPD1_ids,
+  neg_ids  = random_neg32$ensembl_gene_id
+)
+```
+
+
+```{r}
+library(ggplot2)
+
+#Base with purity and highlight PD-1 upregulated genes
+# IDs to highlight
+antiPD1_ids <- c(
+  "ENSMUSG00000003206","ENSMUSG00000005087","ENSMUSG00000025199","ENSMUSG00000026012",
+  "ENSMUSG00000034855","ENSMUSG00000061353","ENSMUSG00000003184","ENSMUSG00000004221",
+  "ENSMUSG00000004296","ENSMUSG00000018899","ENSMUSG00000020395","ENSMUSG00000020826",
+  "ENSMUSG00000021025","ENSMUSG00000022967","ENSMUSG00000025498","ENSMUSG00000025746",
+  "ENSMUSG00000027398","ENSMUSG00000027720","ENSMUSG00000031537","ENSMUSG00000032508",
+  "ENSMUSG00000039217","ENSMUSG00000044701","ENSMUSG00000055170","ENSMUSG00000001444",
+  "ENSMUSG00000002111","ENSMUSG00000024401","ENSMUSG00000024927","ENSMUSG00000026104",
+  "ENSMUSG00000031639","ENSMUSG00000039005","ENSMUSG00000039304","ENSMUSG00000044583"
+)
+#negative control 
+#antiPD1_ids <- random_neg32$ensembl_gene_id
+plot_volcano_with <- function(res_with, title_text, highlight_ids = NULL, highlight_color = "#E69F00") {
+  res <- res_with
+
+  # Figure out gene IDs from either a column or rownames
+  if ("ensembl_gene_id" %in% colnames(res)) {
+    res$GeneID <- res$ensembl_gene_id
+  } else {
+    res$GeneID <- rownames(res)
+  }
+
+  res$Significance <- "Middle"
+  res$Significance[res$logFC >  0.585 & res$P.Value < 0.05] <- "Up"
+  res$Significance[res$logFC < -0.585 & res$P.Value < 0.05] <- "Down"
+
+  # Which points to highlight
+  res$Highlight <- if (!is.null(highlight_ids)) res$GeneID %in% highlight_ids else FALSE
+
+  p <- ggplot(res, aes(x = logFC, y = -log10(P.Value), color = Significance)) +
+    geom_point(alpha = 0.7, size = 2) +
+    # overlay highlighted points on top in a single consistent color
+    geom_point(
+      data = subset(res, Highlight),
+      aes(x = logFC, y = -log10(P.Value)),
+      inherit.aes = FALSE,
+      size = 2.6,
+      color = highlight_color,
+      alpha = 0.95
+    ) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
+    geom_vline(xintercept = c(-0.585, 0.585), linetype = "dashed", color = "grey40") +
+    scale_color_manual(values = c("Up"="red", "Down"="blue", "Middle"="grey")) +
+    labs(title = title_text,
+         x = "log2 Fold Change",
+         y = "-log10 P-value") +
+    xlim(-5, 5) +
+    ylim(0, 6) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+
+  p
+}
+
+## Example usage for Anti-PD-1 vs Vehicle (with purity)
+plot_volcano_with(
+  res_with_AntiPD1_vs_Vehicle,
+  "Volcano: Anti-PD-1 vs Vehicle (with purity, highlighted set)",
+  highlight_ids = antiPD1_ids
+)
+
+## If you want to apply the same highlight set to the other contrasts:
+plot_volcano_with(res_with_EPAT,
+                  "Volcano: EPAT vs Vehicle (BASE, with purity)",
+                  highlight_ids = antiPD1_ids)
+plot_volcano_with(res_with_Comb,
+                  "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)",
+                  highlight_ids = antiPD1_ids)
+plot_volcano_with(res_with_Combo_vs_EPAT,
+                  "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, with purity)",
+                  highlight_ids = antiPD1_ids)
+plot_volcano_with(res_with_AntiPD1_vs_EPAT,
+                  "Volcano: Anti-PD-1 vs EPAT (BASE, with purity)",
+                  highlight_ids = antiPD1_ids)
+plot_volcano_with(res_with_Combo_vs_AntiPD1,
+                  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, with purity)",
+                  highlight_ids = antiPD1_ids)
+
+```
+
+
+```{r}
+#Base without purity and highlight PD-1 upregulated genes
+plot_volcano_wo <- function(res_wo, title_text, highlight_ids = NULL, highlight_color = "#E69F00") {
+  res <- res_wo
+
+  # Determine gene ID source
+  if ("ensembl_gene_id" %in% colnames(res)) {
+    res$GeneID <- res$ensembl_gene_id
+  } else {
+    res$GeneID <- rownames(res)
+  }
+  res$CellType <- rownames(res)
+
+  # Significance classes (for background coloring)
+  res$Significance <- "Middle"
+  res$Significance[res$logFC >  0.585 & res$P.Value < 0.05] <- "Up"
+  res$Significance[res$logFC < -0.585 & res$P.Value < 0.05] <- "Down"
+
+  # Mark highlights
+  res$Highlight <- if (!is.null(highlight_ids)) res$GeneID %in% highlight_ids else FALSE
+
+  ggplot(res, aes(x = logFC, y = -log10(P.Value), color = Significance)) +
+    geom_point(alpha = 0.7, size = 2) +
+    # overlay highlighted genes on top in one color
+    geom_point(
+      data = subset(res, Highlight),
+      aes(x = logFC, y = -log10(P.Value)),
+      inherit.aes = FALSE,
+      size = 2.6,
+      color = highlight_color,
+      alpha = 0.95
+    ) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
+    geom_vline(xintercept = c(-0.585, 0.585), linetype = "dashed", color = "grey40") +
+    scale_color_manual(values = c("Up"="red", "Down"="blue", "Middle"="grey")) +
+    labs(title = title_text,
+         x = "log2 Fold Change",
+         y = "-log10 P-value") +
+    xlim(-5, 5) +
+    ylim(0, 6) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+}
+
+# -----------------------
+# Volcano plots (without purity) with highlights
+# -----------------------
+
+## Anti-PD-1 vs Vehicle
+plot_volcano_wo(res_wo_AntiPD1_vs_Vehicle,
+                "Volcano: Anti-PD-1 vs Vehicle (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+
+## EPAT vs Vehicle
+plot_volcano_wo(res_without_EPAT,
+                "Volcano: EPAT vs Vehicle (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+
+## Anti-PD-1 + EPAT vs Vehicle
+plot_volcano_wo(res_without_Comb,
+                "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+
+## Anti-PD-1 + EPAT vs EPAT
+plot_volcano_wo(res_without_Combo_vs_EPAT,
+                "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+
+## Anti-PD-1 vs EPAT
+plot_volcano_wo(res_without_AntiPD1_vs_EPAT,
+                "Volcano: Anti-PD-1 vs EPAT (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+
+## Anti-PD-1 + EPAT vs Anti-PD-1
+plot_volcano_wo(res_without_Combo_vs_AntiPD1,
+                "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, without purity)",
+                highlight_ids = antiPD1_ids)
+```
+
+```{r}
+# EPAT-upregulated Ensembl IDs to highlight
+epat_genes_ensembl <- c(
+  "ENSMUSG00000002033","ENSMUSG00000022504","ENSMUSG00000025199","ENSMUSG00000032093",
+  "ENSMUSG00000032094","ENSMUSG00000003184","ENSMUSG00000004296","ENSMUSG00000018899",
+  "ENSMUSG00000020395","ENSMUSG00000022906","ENSMUSG00000022967","ENSMUSG00000024235",
+  "ENSMUSG00000024789","ENSMUSG00000025498","ENSMUSG00000026896","ENSMUSG00000027398",
+  "ENSMUSG00000027720","ENSMUSG00000028530","ENSMUSG00000031537","ENSMUSG00000032508",
+  "ENSMUSG00000037523","ENSMUSG00000039217","ENSMUSG00000044701","ENSMUSG00000055170",
+  "ENSMUSG00000024401","ENSMUSG00000024927","ENSMUSG00000026104","ENSMUSG00000036986",
+  "ENSMUSG00000039005","ENSMUSG00000044583","ENSMUSG00000047123","ENSMUSG00000062939"
+)
+
+## === Volcano plots (BASE, with purity; EPAT-highlighted) ===
+
+plot_volcano_with(res_with_AntiPD1_vs_Vehicle,
+                  "Volcano: Anti-PD-1 vs Vehicle (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+plot_volcano_with(res_with_EPAT,
+                  "Volcano: EPAT vs Vehicle (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+plot_volcano_with(res_with_Comb,
+                  "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+plot_volcano_with(res_with_Combo_vs_EPAT,
+                  "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+plot_volcano_with(res_with_AntiPD1_vs_EPAT,
+                  "Volcano: Anti-PD-1 vs EPAT (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+plot_volcano_with(res_with_Combo_vs_AntiPD1,
+                  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, with purity)",
+                  highlight_ids = epat_genes_ensembl)
+
+```
+
+```{r}
+## === Volcano plots (BASE, WITHOUT purity; EPAT-up genes highlighted) ===
+
+# Anti-PD-1 vs Vehicle
+plot_volcano_wo(
+  res_wo_AntiPD1_vs_Vehicle,
+  "Volcano: Anti-PD-1 vs Vehicle (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+
+# EPAT vs Vehicle
+plot_volcano_wo(
+  res_without_EPAT,
+  "Volcano: EPAT vs Vehicle (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+
+# Anti-PD-1 + EPAT vs Vehicle
+plot_volcano_wo(
+  res_without_Comb,
+  "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+
+# Anti-PD-1 + EPAT vs EPAT
+plot_volcano_wo(
+  res_without_Combo_vs_EPAT,
+  "Volcano: Anti-PD-1 + EPAT vs EPAT (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+
+# Anti-PD-1 vs EPAT
+plot_volcano_wo(
+  res_without_AntiPD1_vs_EPAT,
+  "Volcano: Anti-PD-1 vs EPAT (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+
+# Anti-PD-1 + EPAT vs Anti-PD-1
+plot_volcano_wo(
+  res_without_Combo_vs_AntiPD1,
+  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (BASE, without purity)",
+  highlight_ids = epat_genes_ensembl
+)
+```
+
+
+```{r}
+#with tumour purity
+#Anti-PD-1+EPAT vs Vehicle 
+sig_genes_up <- res_with_Comb %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_Veh<- rownames(sig_genes_up)
+
+
+#Anti-PD-1 vs Vehicle 
+sig_genes_up <- res_with_AntiPD1_vs_Vehicle %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_Veh<- rownames(sig_genes_up)
+
+
+
+#EPAT vs Vehicle up regulated 
+sig_genes_up <- res_with_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+EPAT_Veh<- rownames(sig_genes_up)
+
+
+
+#Anti-PD-1 + EPAT vs Anti-PD-1 up regulated 
+sig_genes_up <- res_with_Combo_vs_AntiPD1 %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_PD1<- rownames(sig_genes_up)
+
+
+#Anti-PD-1 vs EPAT up regulated 
+sig_genes_up <- res_with_AntiPD1_vs_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_EPAT<- rownames(sig_genes_up)
+
+
+#without tumour purity
+#Anti-PD-1+EPAT vs Vehicle up regulated 
+sig_genes_up <- res_without_Comb %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_Veh_without<- rownames(sig_genes_up)
+
+
+#Anti-PD-1 vs Vehicle up regulated 
+sig_genes_up <- res_wo_AntiPD1_vs_Vehicle %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_Veh_without <- rownames(sig_genes_up)
+
+
+#EPAT vs Vehicle up regulated 
+sig_genes_up <- res_without_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+EPAT_Veh_without <- rownames(sig_genes_up)
+
+
+#Anti-PD-1 + EPAT vs Anti-PD-1 up regulated 
+sig_genes_up <- res_without_Combo_vs_AntiPD1 %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_PD1_without <- rownames(sig_genes_up)
+
+
+#Anti-PD-1 vs EPAT up regulated 
+sig_genes_up <- res_without_AntiPD1_vs_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_EPAT_without <- rownames(sig_genes_up)
+
+
+```
+
+
+```{r}
+#cat(name, sep = "\n") whatever here
+cat(Comb_Veh, sep = "\n")
+```
+
+
+```{r}
+#quantiseq 
+library(limma)
+library(tibble)
+library(dplyr)
+library(ggplot2)
+
+# -----------------------
+# 1) Prepare matrices (quantiseq instead of base)
+# -----------------------
+# Gene expression: log2CPM matrix (genes x samples)
+logCPM <- human_gene
+
+# remove the last row by name (safer than relying on position)
+quantiseq_nounc <- quantiseq %>%
+  dplyr::filter(cell_type != "uncharacterized cell")
+
+# build cell-fraction matrix (rows = samples, cols = cell types)
+cellfrac_q <- quantiseq_new %>%
+  column_to_rownames("cell_type") %>%
+  as.matrix()
+cellfrac_q <- t(cellfrac_q)  # rows = samples, cols = cell types
+
+# Align sample order across all inputs
+samples <- Reduce(intersect, list(colnames(human_gene), rownames(cellfrac_q)))
+logCPM      <- human_gene[, samples, drop = FALSE]
+cellfrac_q  <- cellfrac_q[samples, , drop = FALSE]
+
+group  <- factor(update_group)[match(samples, colnames(update_cpm_data))]
+purity <- as.numeric(update_tumor_purity)[match(samples, colnames(update_cpm_data))]
+
+# Vehicle as reference
+group <- relevel(group, ref = "Vehicle")
+
+# (Optional but recommended if fractions sum to 1) Drop one col to avoid exact collinearity
+# cellfrac_q <- cellfrac_q[, -ncol(cellfrac_q), drop = FALSE]
+
+# -----------------------
+# 2) Build design matrices (WITH and WITHOUT purity)
+# -----------------------
+design_with_q <- model.matrix(~ 0 + group + cellfrac_q + purity)
+colnames(design_with_q) <- make.names(colnames(design_with_q))
+
+design_wo_q <- model.matrix(~ 0 + group + cellfrac_q)
+colnames(design_wo_q) <- make.names(colnames(design_wo_q))
+
+# -----------------------
+# 3) Fit limma models
+# -----------------------
+fit_w_q  <- lmFit(logCPM, design_with_q)
+fit_wo_q <- lmFit(logCPM, design_wo_q)
+
+# -----------------------
+# 4) Contrasts for all six comparisons
+# -----------------------
+contr_with_q <- makeContrasts(
+  AntiPD1_vs_Vehicle   = groupAnti.PD.1      - groupVehicle,
+  EPAT_vs_Vehicle      = groupEPAT           - groupVehicle,
+  Combo_vs_Vehicle     = groupAnti.PD.1.EPAT - groupVehicle,
+  Combo_vs_AntiPD1     = groupAnti.PD.1.EPAT - groupAnti.PD.1,
+  AntiPD1_vs_EPAT      = groupAnti.PD.1      - groupEPAT,
+  Combo_vs_EPAT        = groupAnti.PD.1.EPAT - groupEPAT,
+  levels = design_with_q
+)
+fit_wc_q <- eBayes(contrasts.fit(fit_w_q, contr_with_q), robust = TRUE)
+
+contr_wo_q <- makeContrasts(
+  AntiPD1_vs_Vehicle   = groupAnti.PD.1      - groupVehicle,
+  EPAT_vs_Vehicle      = groupEPAT           - groupVehicle,
+  Combo_vs_Vehicle     = groupAnti.PD.1.EPAT - groupVehicle,
+  Combo_vs_AntiPD1     = groupAnti.PD.1.EPAT - groupAnti.PD.1,
+  AntiPD1_vs_EPAT      = groupAnti.PD.1      - groupEPAT,
+  Combo_vs_EPAT        = groupAnti.PD.1.EPAT - groupEPAT,
+  levels = design_wo_q
+)
+fit_woc_q <- eBayes(contrasts.fit(fit_wo_q, contr_wo_q), robust = TRUE)
+
+# -----------------------
+# 5) Helper to plot p-value histograms
+# -----------------------
+plot_pval_hist <- function(fit_with, fit_wo, coef_name, title_text) {
+  res_with <- topTable(fit_with, coef = coef_name, number = Inf)
+  res_wo   <- topTable(fit_wo,   coef = coef_name, number = Inf)
+  df_p <- data.frame(
+    pval  = c(res_with$P.Value, res_wo$P.Value),
+    Model = c(rep("With purity",    nrow(res_with)),
+              rep("Without purity and quanTIseq", nrow(res_wo)))
+  )
+  ggplot(df_p, aes(x = pval, fill = Model)) +
+    geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+    theme_minimal(base_size = 13) +
+    labs(title = title_text, x = "P-value", y = "Count") +
+    scale_fill_manual(values = c("steelblue", "tomato"))
+}
+
+# -----------------------
+# 6) Draw all six distributions
+# -----------------------
+# Pairwise between treatments
+plot_pval_hist(fit_wc_q, fit_woc_q, "Combo_vs_AntiPD1",
+               "P-value distribution (Anti-PD-1 + EPAT vs Anti-PD-1) - quantiseq")
+
+plot_pval_hist(fit_wc_q, fit_woc_q, "AntiPD1_vs_EPAT",
+               "P-value distribution (Anti-PD-1 vs EPAT) - quantiseq")
+
+plot_pval_hist(fit_wc_q, fit_woc_q, "Combo_vs_EPAT",
+               "P-value distribution (Anti-PD-1 + EPAT vs EPAT) - quantiseq")
+
+# Each group vs Vehicle
+plot_pval_hist(fit_wc_q, fit_woc_q, "AntiPD1_vs_Vehicle",
+               "P-value distribution (Anti-PD-1 vs Vehicle) - quantiseq")
+
+plot_pval_hist(fit_wc_q, fit_woc_q, "EPAT_vs_Vehicle",
+               "P-value distribution (EPAT vs Vehicle) - quantiseq")
+
+plot_pval_hist(fit_wc_q, fit_woc_q, "Combo_vs_Vehicle",
+               "P-value distribution (Anti-PD-1 + EPAT vs Vehicle) - quantiseq")
+
+
+
+```
+
+```{r}
+unc <- quantiseq[quantiseq$cell_type == "uncharacterized cell", -1]
+
+# Remove uncharacterized row
+quantiseq_new <- quantiseq[quantiseq$cell_type != "uncharacterized cell", ]
+# Rescale the remaining fractions
+quantiseq_new[,-1] <- sweep(quantiseq_new[,-1], 2, (1 - as.numeric(unc)), "/")
+
+quantiseq_new <- quantiseq_new[quantiseq_new$cell_type != "T cell CD4+ (non-regulatory)", ]
+# Result
+quantiseq_new
+
+```
+```{r}
+## === quanTIseq volcano plots (WITH purity) ===
+# Create quanTIseq result tables (parallel to your BASE res_with_* objects)
+res_qs_with_AntiPD1_vs_Vehicle <- topTable(fit_wc_q,  coef = "AntiPD1_vs_Vehicle",   number = Inf)
+res_qs_with_EPAT               <- topTable(fit_wc_q,  coef = "EPAT_vs_Vehicle",       number = Inf)
+res_qs_with_Comb               <- topTable(fit_wc_q,  coef = "Combo_vs_Vehicle",      number = Inf)
+res_qs_with_Combo_vs_EPAT      <- topTable(fit_wc_q,  coef = "Combo_vs_EPAT",         number = Inf)
+res_qs_with_AntiPD1_vs_EPAT    <- topTable(fit_wc_q,  coef = "AntiPD1_vs_EPAT",       number = Inf)
+res_qs_with_Combo_vs_AntiPD1   <- topTable(fit_wc_q,  coef = "Combo_vs_AntiPD1",      number = Inf)
+
+# Use your existing plot_volcano_with() function
+plot_volcano_with(res_qs_with_AntiPD1_vs_Vehicle,
+                  "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, with purity)")
+
+plot_volcano_with(res_qs_with_EPAT,
+                  "Volcano: EPAT vs Vehicle (quanTIseq, with purity)")
+
+plot_volcano_with(res_qs_with_Comb,
+                  "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, with purity)")
+
+plot_volcano_with(res_qs_with_Combo_vs_EPAT,
+                  "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, with purity)")
+
+plot_volcano_with(res_qs_with_AntiPD1_vs_EPAT,
+                  "Volcano: Anti-PD-1 vs EPAT (quanTIseq, with purity)")
+
+plot_volcano_with(res_qs_with_Combo_vs_AntiPD1,
+                  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, with purity)")
+
+```
+
+
+
+```{r}
+#with tumour purity
+#Anti-PD-1+EPAT vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_with_Comb %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_Veh_Q<- rownames(sig_genes_up_1)
+
+
+#Anti-PD-1 vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_with_AntiPD1_vs_Vehicle %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_Veh_Q <- rownames(sig_genes_up_1)
+
+
+
+#EPAT vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_with_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+EPAT_Veh_Q <- rownames(sig_genes_up_1)
+
+
+#Anti-PD-1 + EPAT vs Anti-PD-1 up regulated 
+sig_genes_up_1 <- res_qs_with_Combo_vs_AntiPD1 %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_PD1_Q <- rownames(sig_genes_up_1)
+
+
+#Anti-PD-1 vs EPAT up regulated 
+sig_genes_up_1 <- res_qs_with_AntiPD1_vs_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_EPAT_Q <- rownames(sig_genes_up_1)
+
+
+## === quanTIseq results WITHOUT tumor purity ===
+res_qs_without_AntiPD1_vs_Vehicle <- topTable(fit_woc_q, coef = "AntiPD1_vs_Vehicle", number = Inf)
+res_qs_without_EPAT               <- topTable(fit_woc_q, coef = "EPAT_vs_Vehicle",   number = Inf)
+res_qs_without_Comb               <- topTable(fit_woc_q, coef = "Combo_vs_Vehicle",  number = Inf)
+res_qs_without_Combo_vs_EPAT      <- topTable(fit_woc_q, coef = "Combo_vs_EPAT",     number = Inf)
+res_qs_without_AntiPD1_vs_EPAT    <- topTable(fit_woc_q, coef = "AntiPD1_vs_EPAT",   number = Inf)
+res_qs_without_Combo_vs_AntiPD1   <- topTable(fit_woc_q, coef = "Combo_vs_AntiPD1",  number = Inf)
+
+#without tumour purity
+#Anti-PD-1+EPAT vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_without_Comb %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_Veh_without_Q <- rownames(sig_genes_up_1)
+
+
+#Anti-PD-1 vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_without_AntiPD1_vs_Vehicle %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_Veh_without_Q <- rownames(sig_genes_up_1)
+
+
+
+#EPAT vs Vehicle up regulated 
+sig_genes_up_1 <- res_qs_without_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+EPAT_Veh_without_Q <- rownames(sig_genes_up_1)
+
+
+
+#Anti-PD-1 + EPAT vs Anti-PD-1 up regulated 
+sig_genes_up_1 <- res_qs_without_Combo_vs_AntiPD1 %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+Comb_PD1_without_Q <- rownames(sig_genes_up_1)
+
+#Anti-PD-1 vs EPAT up regulated 
+sig_genes_up_1 <- res_qs_without_AntiPD1_vs_EPAT %>%
+  subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
+  .[order(.$P.Value), ]
+PD1_EPAT_without_Q <- rownames(sig_genes_up_1)
+
+```
+
+
+
+```{r}
+#cat(name, sep = "\n") whatever here
+cat(PD1_EPAT_down_without_Q, sep = "\n")
+```
+
+```{r}
+## === Volcano plots (quanTIseq, WITHOUT purity) ===
+plot_volcano_with(res_qs_without_AntiPD1_vs_Vehicle,
+                  "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, without purity)")
+
+plot_volcano_with(res_qs_without_EPAT,
+                  "Volcano: EPAT vs Vehicle (quanTIseq, without purity)")
+
+plot_volcano_with(res_qs_without_Comb,
+                  "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, without purity)")
+
+plot_volcano_with(res_qs_without_Combo_vs_EPAT,
+                  "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, without purity)")
+
+plot_volcano_with(res_qs_without_AntiPD1_vs_EPAT,
+                  "Volcano: Anti-PD-1 vs EPAT (quanTIseq, without purity)")
+
+plot_volcano_with(res_qs_without_Combo_vs_AntiPD1,
+                  "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, without purity)")
+
+```
+
+```{r}
+#quantiseq with purity highlight Anti-PD-1 upregulated genes
+library(ggplot2)
+
+# Human gene symbols to highlight (as provided)
+antiPD1_positive_genes <- c(
+  "Cd44", "Chuk", "Cxcl12", "Ebi3", "Ifnar1", "Ifng", "Ikbkb", "Ikbkg",
+  "Il12b", "Il18", "Il1b", "Il2", "Il27", "Il6", "Irf3", "Irf7",
+  "Itk", "Nfkbia", "Nos2", "Rela", "Spi1", "Stat1", "Tlr4", "Tlr7",
+  "Tnf", "Tnfsf10", "Cd28", "Irf1", "Myd88", "Tbx21", "Tlr3", "Cxcl10"
+)
+#negative control 
+#antiPD1_positive_genes <- random_neg32$external_gene_name
+# quanTIseq: WITH purity volcano plotter w/ highlight by human gene symbol
+plot_volcano_with_qs <- function(res_with, title_text,
+                                 highlight_symbols,
+                                 symbol_col = "gene_symbol",
+                                 highlight_color = "#E69F00") {
+  res <- res_with
+
+  # Determine gene symbol source; fall back to rownames
+  if (symbol_col %in% colnames(res)) {
+    res$GeneSym <- res[[symbol_col]]
+  } else {
+    res$GeneSym <- rownames(res)
+  }
+
+  # Normalize for case-insensitive matching
+  res$.sym_norm <- tolower(as.character(res$GeneSym))
+  highlight_norm <- tolower(highlight_symbols)
+
+  # Base categories for background color
+  res$Significance <- "Middle"
+  res$Significance[res$logFC >  0.585 & res$P.Value < 0.05] <- "Up"
+  res$Significance[res$logFC < -0.585 & res$P.Value < 0.05] <- "Down"
+
+  # Mark highlights
+  res$Highlight <- res$.sym_norm %in% highlight_norm
+
+  ggplot(res, aes(x = logFC, y = -log10(P.Value), color = Significance)) +
+    geom_point(alpha = 0.7, size = 2) +
+    # overlay highlighted points on top in a single accent color
+    geom_point(
+      data = subset(res, Highlight),
+      aes(x = logFC, y = -log10(P.Value)),
+      inherit.aes = FALSE,
+      size = 2.6,
+      color = highlight_color,
+      alpha = 0.95
+    ) +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
+    geom_vline(xintercept = c(-0.585, 0.585), linetype = "dashed", color = "grey40") +
+    scale_color_manual(values = c("Up"="red", "Down"="blue", "Middle"="grey")) +
+    labs(title = title_text,
+         x = "log2 Fold Change",
+         y = "-log10 P-value") +
+    xlim(-5, 5) +
+    ylim(0, 6) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "none")
+}
+
+## === quanTIseq volcano plots (WITH purity, highlighted set) ===
+plot_volcano_with_qs(res_qs_with_AntiPD1_vs_Vehicle,
+                     "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_EPAT,
+                     "Volcano: EPAT vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Comb,
+                     "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Combo_vs_EPAT,
+                     "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, with purity)",                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_AntiPD1_vs_EPAT,
+                     "Volcano: Anti-PD-1 vs EPAT (quanTIseq, with purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Combo_vs_AntiPD1,
+                     "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, with purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+
+```
+
+
+```{r}
+## === quanTIseq volcano plots (WITHOUT purity, Anti-PD-1 upregulated genes) ===
+plot_volcano_with_qs(res_qs_without_AntiPD1_vs_Vehicle,
+                     "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_EPAT,
+                     "Volcano: EPAT vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Comb,
+                     "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Combo_vs_EPAT,
+                     "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_AntiPD1_vs_EPAT,
+                     "Volcano: Anti-PD-1 vs EPAT (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Combo_vs_AntiPD1,
+                     "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, without purity)",
+                     highlight_symbols = antiPD1_positive_genes)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Use the EPAT human gene symbols you provided above
+epat_positive_genes <- gene_names
+
+## Reuse your existing plot_volcano_with_qs() helper
+## === quanTIseq volcano plots (WITH purity, EPAT-highlighted) ===
+plot_volcano_with_qs(res_qs_with_AntiPD1_vs_Vehicle,
+                     "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_EPAT,
+                     "Volcano: EPAT vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Comb,
+                     "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Combo_vs_EPAT,
+                     "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_AntiPD1_vs_EPAT,
+                     "Volcano: Anti-PD-1 vs EPAT (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_with_Combo_vs_AntiPD1,
+                     "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, with purity)",
+                     highlight_symbols = epat_positive_genes)
+
+```
+
+```{r}
+## === quanTIseq volcano plots (WITHOUT purity, EPAT-highlighted) ===
+plot_volcano_with_qs(res_qs_without_AntiPD1_vs_Vehicle,
+                     "Volcano: Anti-PD-1 vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_EPAT,
+                     "Volcano: EPAT vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Comb,
+                     "Volcano: Anti-PD-1 + EPAT vs Vehicle (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Combo_vs_EPAT,
+                     "Volcano: Anti-PD-1 + EPAT vs EPAT (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_AntiPD1_vs_EPAT,
+                     "Volcano: Anti-PD-1 vs EPAT (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+
+plot_volcano_with_qs(res_qs_without_Combo_vs_AntiPD1,
+                     "Volcano: Anti-PD-1 + EPAT vs Anti-PD-1 (quanTIseq, without purity)",
+                     highlight_symbols = epat_positive_genes)
+```
+
+```{r}
+library(pheatmap)
+
+cols <- colorRampPalette(c("blue", "lightyellow", "red"))(51)
+breaks <- seq(-1, 1, length.out = 52)
+
+pheatmap(as.matrix(KEGG_direction_matrix_for_R),
+         color = cols,
+         breaks = breaks,
+         cluster_rows = FALSE,
+         cluster_cols = FALSE,
+         border_color = NA,
+         main = "KEGG Pathway Regulation Across Analyses\n(Up=+1, Down=-1, 0=NS)")
+```
+
+
+
+```{r}
+# --- packages ---
+suppressPackageStartupMessages({
+  library(KEGGREST)
+  library(org.Mm.eg.db)
+  library(AnnotationDbi)
+  library(dplyr)
+  library(ggplot2)
+  library(tibble)
+  library(readr)
+  library(rlang)
+})
+
+# ===== 1) Define pathways =====
+kegg_paths <- c(
+  Hematopoietic_cell_lineage      = "mmu04640",
+  Cytokine_cytokine_receptor_int  = "mmu04060",
+  Efferocytosis                   = "mmu04148",
+  Fluid_shear_stress_atheroscl    = "mmu05418",
+  Osteoclast_differentiation      = "mmu04380",
+  Pertussis                       = "mmu05133",
+  Systemic_lupus_erythematosus    = "mmu05322",
+  Control_Spliceosome                        = "mmu03010",  # housekeeping
+  Control_Protein_export       = "mmu00190",  # mitochondria/ETC
+  Control_Purine_metabolism  = "mmu00020"
+)
+
+# ===== 2) Helper: KEGG mmu pathway -> Entrez -> Ensembl (ALL mappings) =====
+kegg_path_to_ensembl <- function(path_id) {
+  x <- KEGGREST::keggLink("mmu", paste0("path:", path_id))   # VALUES are "mmu:#####"
+  entrez <- sub("^mmu:", "", unname(x))                      # <-- use VALUES, strip "mmu:"
+  if (!length(entrez)) return(tibble(ENTREZID=character(), ENSEMBL=character(), SYMBOL=character()))
+
+  valid_entrez <- intersect(entrez, keys(org.Mm.eg.db, keytype = "ENTREZID"))
+  if (!length(valid_entrez)) return(tibble(ENTREZID=character(), ENSEMBL=character(), SYMBOL=character()))
+
+  res <- AnnotationDbi::select(
+    org.Mm.eg.db,
+    keys = valid_entrez,
+    keytype = "ENTREZID",
+    columns = c("ENSEMBL", "SYMBOL")
+  )
+  res <- res[!is.na(res$ENSEMBL) & nzchar(res$ENSEMBL), , drop = FALSE]
+  unique(as_tibble(res))
+}
+
+# Pull gene sets for all 7 pathways
+path2genes <- lapply(kegg_paths, kegg_path_to_ensembl)
+
+# ===== 3) Normalise your res_with_Comb table =====
+# Expectation: res_with_Comb exists with Ensembl IDs as rownames OR a column named "ENSEMBL".
+if (!"ENSEMBL" %in% names(res_with_Comb)) {
+  res_with_Comb <- res_with_Comb %>% rownames_to_column(var = "ENSEMBL")
+}
+# Clean Ensembl version suffixes if present
+res_with_Comb <- res_with_Comb %>% mutate(ENSEMBL = sub("\\.\\d+$", "", ENSEMBL))
+
+# Ensure required columns
+stopifnot(all(c("ENSEMBL", "logFC") %in% names(res_with_Comb)))
+
+# ===== 4) For each pathway: intersect, compute per-gene |logFC|, then 1 summary per pathway =====
+out_dir <- "kegg_forest_plots"
+dir.create(out_dir, showWarnings = FALSE)
+
+# Collect per-gene abs(logFC) rows (for export)
+per_gene_abs <- list()
+
+summary_rows <- lapply(names(path2genes), function(nm) {
+  kegg_id <- kegg_paths[[nm]]
+  mapping <- path2genes[[nm]] %>% distinct(ENSEMBL, SYMBOL, ENTREZID)
+  if (nrow(mapping) == 0) {
+    return(tibble(Pathway = nm, KEGG_ID = kegg_id, n_genes = 0,
+                  mean_abs_logFC = NA_real_, CI_low = NA_real_, CI_high = NA_real_))
+  }
+
+  joined <- inner_join(mapping, res_with_Comb, by = "ENSEMBL") %>%
+            distinct(ENSEMBL, .keep_all = TRUE)
+
+  if (!nrow(joined)) {
+    return(tibble(Pathway = nm, KEGG_ID = kegg_id, n_genes = 0,
+                  mean_abs_logFC = NA_real_, CI_low = NA_real_, CI_high = NA_real_))
+  }
+
+  # Per-gene absolute logFC
+  joined <- joined %>% mutate(abs_logFC = abs(logFC))
+  per_gene_abs[[nm]] <- joined %>% mutate(Pathway = nm, KEGG_ID = kegg_id)
+
+  # Pathway-level ONE value = mean(|logFC|)
+  n  <- sum(!is.na(joined$abs_logFC))
+  m  <- mean(joined$abs_logFC, na.rm = TRUE)
+  s  <- stats::sd(joined$abs_logFC, na.rm = TRUE)
+  se <- ifelse(n > 0, s / sqrt(n), NA_real_)
+  ci_low  <- m - 1.96 * se
+  ci_high <- m + 1.96 * se
+
+  tibble(Pathway = nm, KEGG_ID = kegg_id, n_genes = n,
+         mean_abs_logFC = m, CI_low = ci_low, CI_high = ci_high)
+})
+
+summary_df <- bind_rows(summary_rows)
+
+
+```
+
+
+```{r}
+
+# ===== 5) Save per-gene and per-pathway outputs =====
+per_gene_abs_df <- bind_rows(per_gene_abs)
+if (nrow(per_gene_abs_df) > 0) {
+  write_csv(per_gene_abs_df %>%
+              select(Pathway, KEGG_ID, ENSEMBL, SYMBOL, ENTREZID, logFC, abs_logFC, everything()),
+            file.path(out_dir, "per_gene_abs_logFC_by_pathway.csv"))
+}
+
+out_csv <- file.path(out_dir, "per_pathway_mean_abs_logFC.csv")
+write_csv(summary_df, out_csv)
+
+# ===== 6) Forest plot: one point per pathway showing mean(|logFC|) ± 95% CI =====
+plot_df <- summary_df %>%
+  arrange(mean_abs_logFC) %>%
+  mutate(PathwayLabel = str_replace(Pathway, "\\s*\\(mmu\\d+\\)", ""),
+         PathwayLabel = factor(PathwayLabel, levels = PathwayLabel))
+
+
+p <- ggplot(plot_df, aes(x = mean_abs_logFC, y = PathwayLabel)) +
+  geom_point(size = 2) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Average absolute log2 fold change for each pathway",
+    x = "absolute log2 Fold Change",
+    y = NULL,
+    #caption = "CI = mean ± 1.96·(sd(|logFC|)/√n) across overlapping pathway genes"
+  ) +
+  theme_minimal(base_size = 12)
+
+out_png <- file.path(out_dir, "per_pathway_forest_mean_abs_logFC.png")
+ggsave(out_png, p, width = 8, height = 4.5, dpi = 300)
+
+cat("Wrote per-gene CSV: ", normalizePath(file.path(out_dir, "per_gene_abs_logFC_by_pathway.csv")), "\n")
+cat("Wrote per-pathway CSV:", normalizePath(out_csv), "\n")
+cat("Saved forest plot:   ", normalizePath(out_png), "\n")
+```
+
+```{r}
+# --- packages ---
+suppressPackageStartupMessages({
+  library(KEGGREST)
+  library(org.Mm.eg.db)
+  library(AnnotationDbi)
+  library(dplyr)
+  library(tibble)
+})
+
+# ===== 1) Define immune-related pathways =====
+immune_paths <- c(
+  Hematopoietic_cell_lineage      = "mmu04640",
+  Cytokine_cytokine_receptor_int  = "mmu04060",
+  Efferocytosis                   = "mmu04148",
+  Fluid_shear_stress_atheroscl    = "mmu05418",
+  Osteoclast_differentiation      = "mmu04380",
+  Pertussis                       = "mmu05133",
+  Systemic_lupus_erythematosus    = "mmu05322"
+)
+
+# ===== 2) Helper: KEGG mmu pathway -> Entrez -> Ensembl =====
+kegg_path_to_ensembl <- function(path_id) {
+  x <- KEGGREST::keggLink("mmu", paste0("path:", path_id))
+  entrez <- sub("^mmu:", "", unname(x))
+  valid_entrez <- intersect(entrez, keys(org.Mm.eg.db, keytype = "ENTREZID"))
+  if (!length(valid_entrez)) return(tibble(ENTREZID=character(), ENSEMBL=character(), SYMBOL=character()))
+  res <- AnnotationDbi::select(
+    org.Mm.eg.db,
+    keys = valid_entrez,
+    keytype = "ENTREZID",
+    columns = c("ENSEMBL", "SYMBOL")
+  )
+  res <- res[!is.na(res$ENSEMBL) & nzchar(res$ENSEMBL), , drop = FALSE]
+  unique(as_tibble(res))
+}
+
+# ===== 3) Collect all immune-pathway genes =====
+immune_path2genes <- lapply(immune_paths, kegg_path_to_ensembl)
+immune_genes_all <- unique(unlist(lapply(immune_path2genes, `[[`, "ENSEMBL")))
+
+# ===== 4) Prepare res_with_Comb =====
+if (!"ENSEMBL" %in% names(res_with_Comb)) {
+  res_with_Comb <- res_with_Comb %>% rownames_to_column(var = "ENSEMBL")
+}
+res_with_Comb <- res_with_Comb %>% mutate(ENSEMBL = sub("\\.\\d+$", "", ENSEMBL))
+
+# ===== 5) Compute absolute logFC and get top 50 =====
+top50 <- res_with_Comb %>%
+  mutate(abs_logFC = abs(logFC)) %>%
+  arrange(desc(abs_logFC)) %>%
+  slice_head(n = 50)
+
+# ===== 6) Map Ensembl to gene symbols for readability =====
+mapped <- AnnotationDbi::select(
+  org.Mm.eg.db,
+  keys = top50$ENSEMBL,
+  keytype = "ENSEMBL",
+  columns = c("SYMBOL")
+)
+top50 <- top50 %>% left_join(mapped, by = "ENSEMBL")
+
+# ===== 7) Identify which top 50 genes are NOT in any immune pathway =====
+top50$in_immune_pathway <- top50$ENSEMBL %in% immune_genes_all
+not_in_immune <- top50 %>% filter(!in_immune_pathway)
+
+# ===== 8) Print results =====
+cat("\n=== Top 50 genes by |logFC| not in immune-related KEGG pathways ===\n")
+not_in_immune %>%
+  dplyr::select(ENSEMBL, SYMBOL, logFC, abs_logFC) %>%
+  dplyr::arrange(desc(abs_logFC)) %>%
+  print(n = Inf)
+
+cat("\nNumber of non-immune genes in top 50:", nrow(not_in_immune), "\n")
+
+
+
+```
+
+```{r}
+gene_pathways_collapsed <- gene_pathways %>%
+  group_by(ENSEMBL, SYMBOL) %>%
+  summarise(
+    KEGG_Ids      = paste(sort(unique(KEGG_ID)), collapse = "; "),
+    Pathway_Names = paste(sort(unique(Pathway_Name)), collapse = "; "),
+    .groups = "drop"
+  ) %>%
+  arrange(SYMBOL)
+
+
+```
+
+```{r}
+# Input your data
+df <- data.frame(
+  Pathway = c(
+    "Hematopoietic_cell_lineage", "Cytokine_cytokine_receptor_int",
+    "Efferocytosis", "Fluid_shear_stress_atheroscl",
+    "Osteoclast_differentiation", "Pertussis",
+    "Systemic_lupus_erythematosus", "Control_Spliceosome",
+    "Control_Protein_export", "Control_Purine_metabolism"
+  ),
+  mean_abs_logFC = c(
+    0.5027654034330030, 0.4957269751986700, 0.3298528282092970,
+    0.3532895378688860, 0.3261463457966520, 0.35567279064406100,
+    0.5610788009619850, 0.19280155582303100,
+    0.19370605950159300, 0.18296278216804800
+  )
+)
+# Sort by mean logFC
+df <- df[order(df$mean_abs_logFC, decreasing = TRUE), ]
+
+# Create groups
+df$Group <- ifelse(1:nrow(df) <= 7, "Top7", "Bottom3")
+wilcox.test(mean_abs_logFC ~ Group, data = df)
+
+```

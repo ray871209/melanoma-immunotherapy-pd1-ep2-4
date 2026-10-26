@@ -1,607 +1,608 @@
-# Original research figures — browsable gallery
+# Original research images — 66-figure gallery
 
-**66 original PNG files**, uploaded by the researcher, are stored in [`results/figures/original-uploads/`](../results/figures/original-uploads/). The image bytes were retained unchanged.
+All **66 original research and supplementary PNGs** are hosted in [`results/figures/original-uploads/`](../results/figures/original-uploads/). Figures have stable numbered filenames (`research-figure-001.png` etc.) instead of GitHub's timestamp-based `Pasted …png` names. **The binary image data did not change** during renaming.
 
-These include quality-control and normalisation visualisations, tumour-purity / immune-cell analyses, original differential-expression outputs and supplementary appendix plots. The upload's default `Pasted ...` filenames do not encode a scientific contrast or model. The gallery therefore uses neutral file-based captions; scientific interpretation and panel labels should be taken from the thesis and appendix, not inferred from timestamps.
+**Scientific attribution:** A sequential figure number is an archive identifier, **not** a verified manuscript Figure S number, experimental contrast or analytical method. Refer to the author's thesis and [appendix S1–S9 map](supplementary-volcano-gallery.md) for scientific panel labels.
 
-## Original image preview
+## Image previews
 
 <details>
-<summary>Figure 01 — image.png</summary>
+<summary>Research figure 001</summary>
 
-![Original research image 1](../results/figures/original-uploads/image.png)
+![Original research figure 001](../results/figures/original-uploads/research-figure-001.png)
 
-[Open original PNG](../results/figures/original-uploads/image.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-001.png)
 
 </details>
 
 <details>
-<summary>Figure 02 — Pasted 2026-10-26 at 12.36.20 PM.png</summary>
+<summary>Research figure 002</summary>
 
-![Original research image 2](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.20%20PM.png)
+![Original research figure 002](../results/figures/original-uploads/research-figure-002.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.20%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-002.png)
 
 </details>
 
 <details>
-<summary>Figure 03 — Pasted 2026-10-26 at 12.36.25 PM.png</summary>
+<summary>Research figure 003</summary>
 
-![Original research image 3](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.25%20PM.png)
+![Original research figure 003](../results/figures/original-uploads/research-figure-003.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.25%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-003.png)
 
 </details>
 
 <details>
-<summary>Figure 04 — Pasted 2026-10-26 at 12.36.27 PM.png</summary>
+<summary>Research figure 004</summary>
 
-![Original research image 4](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.27%20PM.png)
+![Original research figure 004](../results/figures/original-uploads/research-figure-004.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.27%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-004.png)
 
 </details>
 
 <details>
-<summary>Figure 05 — Pasted 2026-10-26 at 12.36.58 PM.png</summary>
+<summary>Research figure 005</summary>
 
-![Original research image 5](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.58%20PM.png)
+![Original research figure 005](../results/figures/original-uploads/research-figure-005.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.36.58%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-005.png)
 
 </details>
 
 <details>
-<summary>Figure 06 — Pasted 2026-10-26 at 12.37.00 PM.png</summary>
+<summary>Research figure 006</summary>
 
-![Original research image 6](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.00%20PM.png)
+![Original research figure 006](../results/figures/original-uploads/research-figure-006.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.00%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-006.png)
 
 </details>
 
 <details>
-<summary>Figure 07 — Pasted 2026-10-26 at 12.37.02 PM.png</summary>
+<summary>Research figure 007</summary>
 
-![Original research image 7](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.02%20PM.png)
+![Original research figure 007](../results/figures/original-uploads/research-figure-007.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.02%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-007.png)
 
 </details>
 
 <details>
-<summary>Figure 08 — Pasted 2026-10-26 at 12.37.05 PM.png</summary>
+<summary>Research figure 008</summary>
 
-![Original research image 8](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.05%20PM.png)
+![Original research figure 008](../results/figures/original-uploads/research-figure-008.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.05%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-008.png)
 
 </details>
 
 <details>
-<summary>Figure 09 — Pasted 2026-10-26 at 12.37.07 PM.png</summary>
+<summary>Research figure 009</summary>
 
-![Original research image 9](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.07%20PM.png)
+![Original research figure 009](../results/figures/original-uploads/research-figure-009.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.07%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-009.png)
 
 </details>
 
 <details>
-<summary>Figure 10 — Pasted 2026-10-26 at 12.37.09 PM.png</summary>
+<summary>Research figure 010</summary>
 
-![Original research image 10](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.09%20PM.png)
+![Original research figure 010](../results/figures/original-uploads/research-figure-010.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.09%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-010.png)
 
 </details>
 
 <details>
-<summary>Figure 11 — Pasted 2026-10-26 at 12.37.12 PM.png</summary>
+<summary>Research figure 011</summary>
 
-![Original research image 11](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.12%20PM.png)
+![Original research figure 011](../results/figures/original-uploads/research-figure-011.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.12%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-011.png)
 
 </details>
 
 <details>
-<summary>Figure 12 — Pasted 2026-10-26 at 12.37.14 PM.png</summary>
+<summary>Research figure 012</summary>
 
-![Original research image 12](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.14%20PM.png)
+![Original research figure 012](../results/figures/original-uploads/research-figure-012.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.14%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-012.png)
 
 </details>
 
 <details>
-<summary>Figure 13 — Pasted 2026-10-26 at 12.37.41 PM.png</summary>
+<summary>Research figure 013</summary>
 
-![Original research image 13](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.41%20PM.png)
+![Original research figure 013](../results/figures/original-uploads/research-figure-013.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.41%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-013.png)
 
 </details>
 
 <details>
-<summary>Figure 14 — Pasted 2026-10-26 at 12.37.44 PM.png</summary>
+<summary>Research figure 014</summary>
 
-![Original research image 14](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.44%20PM.png)
+![Original research figure 014](../results/figures/original-uploads/research-figure-014.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.44%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-014.png)
 
 </details>
 
 <details>
-<summary>Figure 15 — Pasted 2026-10-26 at 12.37.45 PM.png</summary>
+<summary>Research figure 015</summary>
 
-![Original research image 15](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.45%20PM.png)
+![Original research figure 015](../results/figures/original-uploads/research-figure-015.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.45%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-015.png)
 
 </details>
 
 <details>
-<summary>Figure 16 — Pasted 2026-10-26 at 12.37.47 PM.png</summary>
+<summary>Research figure 016</summary>
 
-![Original research image 16](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.47%20PM.png)
+![Original research figure 016](../results/figures/original-uploads/research-figure-016.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.47%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-016.png)
 
 </details>
 
 <details>
-<summary>Figure 17 — Pasted 2026-10-26 at 12.37.49 PM.png</summary>
+<summary>Research figure 017</summary>
 
-![Original research image 17](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.49%20PM.png)
+![Original research figure 017](../results/figures/original-uploads/research-figure-017.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.49%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-017.png)
 
 </details>
 
 <details>
-<summary>Figure 18 — Pasted 2026-10-26 at 12.37.51 PM.png</summary>
+<summary>Research figure 018</summary>
 
-![Original research image 18](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.51%20PM.png)
+![Original research figure 018](../results/figures/original-uploads/research-figure-018.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.51%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-018.png)
 
 </details>
 
 <details>
-<summary>Figure 19 — Pasted 2026-10-26 at 12.37.54 PM.png</summary>
+<summary>Research figure 019</summary>
 
-![Original research image 19](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.54%20PM.png)
+![Original research figure 019](../results/figures/original-uploads/research-figure-019.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.54%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-019.png)
 
 </details>
 
 <details>
-<summary>Figure 20 — Pasted 2026-10-26 at 12.37.57 PM.png</summary>
+<summary>Research figure 020</summary>
 
-![Original research image 20](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.57%20PM.png)
+![Original research figure 020](../results/figures/original-uploads/research-figure-020.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.37.57%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-020.png)
 
 </details>
 
 <details>
-<summary>Figure 21 — Pasted 2026-10-26 at 12.38.00 PM.png</summary>
+<summary>Research figure 021</summary>
 
-![Original research image 21](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.00%20PM.png)
+![Original research figure 021](../results/figures/original-uploads/research-figure-021.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.00%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-021.png)
 
 </details>
 
 <details>
-<summary>Figure 22 — Pasted 2026-10-26 at 12.38.02 PM.png</summary>
+<summary>Research figure 022</summary>
 
-![Original research image 22](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.02%20PM.png)
+![Original research figure 022](../results/figures/original-uploads/research-figure-022.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.02%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-022.png)
 
 </details>
 
 <details>
-<summary>Figure 23 — Pasted 2026-10-26 at 12.38.05 PM.png</summary>
+<summary>Research figure 023</summary>
 
-![Original research image 23](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.05%20PM.png)
+![Original research figure 023](../results/figures/original-uploads/research-figure-023.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.05%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-023.png)
 
 </details>
 
 <details>
-<summary>Figure 24 — Pasted 2026-10-26 at 12.38.14 PM.png</summary>
+<summary>Research figure 024</summary>
 
-![Original research image 24](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.14%20PM.png)
+![Original research figure 024](../results/figures/original-uploads/research-figure-024.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.14%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-024.png)
 
 </details>
 
 <details>
-<summary>Figure 25 — Pasted 2026-10-26 at 12.38.17 PM.png</summary>
+<summary>Research figure 025</summary>
 
-![Original research image 25](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.17%20PM.png)
+![Original research figure 025](../results/figures/original-uploads/research-figure-025.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.17%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-025.png)
 
 </details>
 
 <details>
-<summary>Figure 26 — Pasted 2026-10-26 at 12.38.19 PM.png</summary>
+<summary>Research figure 026</summary>
 
-![Original research image 26](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.19%20PM.png)
+![Original research figure 026](../results/figures/original-uploads/research-figure-026.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.19%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-026.png)
 
 </details>
 
 <details>
-<summary>Figure 27 — Pasted 2026-10-26 at 12.38.23 PM.png</summary>
+<summary>Research figure 027</summary>
 
-![Original research image 27](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.23%20PM.png)
+![Original research figure 027](../results/figures/original-uploads/research-figure-027.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.23%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-027.png)
 
 </details>
 
 <details>
-<summary>Figure 28 — Pasted 2026-10-26 at 12.38.25 PM.png</summary>
+<summary>Research figure 028</summary>
 
-![Original research image 28](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.25%20PM.png)
+![Original research figure 028](../results/figures/original-uploads/research-figure-028.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.25%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-028.png)
 
 </details>
 
 <details>
-<summary>Figure 29 — Pasted 2026-10-26 at 12.38.27 PM.png</summary>
+<summary>Research figure 029</summary>
 
-![Original research image 29](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.27%20PM.png)
+![Original research figure 029](../results/figures/original-uploads/research-figure-029.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.27%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-029.png)
 
 </details>
 
 <details>
-<summary>Figure 30 — Pasted 2026-10-26 at 12.38.28 PM.png</summary>
+<summary>Research figure 030</summary>
 
-![Original research image 30](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.28%20PM.png)
+![Original research figure 030](../results/figures/original-uploads/research-figure-030.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.28%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-030.png)
 
 </details>
 
 <details>
-<summary>Figure 31 — Pasted 2026-10-26 at 12.38.31 PM.png</summary>
+<summary>Research figure 031</summary>
 
-![Original research image 31](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.31%20PM.png)
+![Original research figure 031](../results/figures/original-uploads/research-figure-031.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.31%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-031.png)
 
 </details>
 
 <details>
-<summary>Figure 32 — Pasted 2026-10-26 at 12.38.34 PM.png</summary>
+<summary>Research figure 032</summary>
 
-![Original research image 32](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.34%20PM.png)
+![Original research figure 032](../results/figures/original-uploads/research-figure-032.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.34%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-032.png)
 
 </details>
 
 <details>
-<summary>Figure 33 — Pasted 2026-10-26 at 12.38.36 PM.png</summary>
+<summary>Research figure 033</summary>
 
-![Original research image 33](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.36%20PM.png)
+![Original research figure 033](../results/figures/original-uploads/research-figure-033.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.36%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-033.png)
 
 </details>
 
 <details>
-<summary>Figure 34 — Pasted 2026-10-26 at 12.38.38 PM.png</summary>
+<summary>Research figure 034</summary>
 
-![Original research image 34](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.38%20PM.png)
+![Original research figure 034](../results/figures/original-uploads/research-figure-034.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.38%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-034.png)
 
 </details>
 
 <details>
-<summary>Figure 35 — Pasted 2026-10-26 at 12.38.40 PM.png</summary>
+<summary>Research figure 035</summary>
 
-![Original research image 35](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.40%20PM.png)
+![Original research figure 035](../results/figures/original-uploads/research-figure-035.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.40%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-035.png)
 
 </details>
 
 <details>
-<summary>Figure 36 — Pasted 2026-10-26 at 12.38.42 PM.png</summary>
+<summary>Research figure 036</summary>
 
-![Original research image 36](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.42%20PM.png)
+![Original research figure 036](../results/figures/original-uploads/research-figure-036.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.42%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-036.png)
 
 </details>
 
 <details>
-<summary>Figure 37 — Pasted 2026-10-26 at 12.38.45 PM.png</summary>
+<summary>Research figure 037</summary>
 
-![Original research image 37](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.45%20PM.png)
+![Original research figure 037](../results/figures/original-uploads/research-figure-037.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.45%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-037.png)
 
 </details>
 
 <details>
-<summary>Figure 38 — Pasted 2026-10-26 at 12.38.48 PM.png</summary>
+<summary>Research figure 038</summary>
 
-![Original research image 38](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.48%20PM.png)
+![Original research figure 038](../results/figures/original-uploads/research-figure-038.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.48%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-038.png)
 
 </details>
 
 <details>
-<summary>Figure 39 — Pasted 2026-10-26 at 12.38.50 PM.png</summary>
+<summary>Research figure 039</summary>
 
-![Original research image 39](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.50%20PM.png)
+![Original research figure 039](../results/figures/original-uploads/research-figure-039.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.50%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-039.png)
 
 </details>
 
 <details>
-<summary>Figure 40 — Pasted 2026-10-26 at 12.38.51 PM.png</summary>
+<summary>Research figure 040</summary>
 
-![Original research image 40](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.51%20PM.png)
+![Original research figure 040](../results/figures/original-uploads/research-figure-040.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.51%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-040.png)
 
 </details>
 
 <details>
-<summary>Figure 41 — Pasted 2026-10-26 at 12.38.58 PM.png</summary>
+<summary>Research figure 041</summary>
 
-![Original research image 41](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.58%20PM.png)
+![Original research figure 041](../results/figures/original-uploads/research-figure-041.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.38.58%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-041.png)
 
 </details>
 
 <details>
-<summary>Figure 42 — Pasted 2026-10-26 at 12.39.00 PM.png</summary>
+<summary>Research figure 042</summary>
 
-![Original research image 42](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.00%20PM.png)
+![Original research figure 042](../results/figures/original-uploads/research-figure-042.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.00%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-042.png)
 
 </details>
 
 <details>
-<summary>Figure 43 — Pasted 2026-10-26 at 12.39.09 PM.png</summary>
+<summary>Research figure 043</summary>
 
-![Original research image 43](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.09%20PM.png)
+![Original research figure 043](../results/figures/original-uploads/research-figure-043.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.09%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-043.png)
 
 </details>
 
 <details>
-<summary>Figure 44 — Pasted 2026-10-26 at 12.39.11 PM.png</summary>
+<summary>Research figure 044</summary>
 
-![Original research image 44](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.11%20PM.png)
+![Original research figure 044](../results/figures/original-uploads/research-figure-044.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.11%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-044.png)
 
 </details>
 
 <details>
-<summary>Figure 45 — Pasted 2026-10-26 at 12.39.13 PM.png</summary>
+<summary>Research figure 045</summary>
 
-![Original research image 45](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.13%20PM.png)
+![Original research figure 045](../results/figures/original-uploads/research-figure-045.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.13%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-045.png)
 
 </details>
 
 <details>
-<summary>Figure 46 — Pasted 2026-10-26 at 12.39.18 PM.png</summary>
+<summary>Research figure 046</summary>
 
-![Original research image 46](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.18%20PM.png)
+![Original research figure 046](../results/figures/original-uploads/research-figure-046.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.18%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-046.png)
 
 </details>
 
 <details>
-<summary>Figure 47 — Pasted 2026-10-26 at 12.39.19 PM.png</summary>
+<summary>Research figure 047</summary>
 
-![Original research image 47](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.19%20PM.png)
+![Original research figure 047](../results/figures/original-uploads/research-figure-047.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.19%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-047.png)
 
 </details>
 
 <details>
-<summary>Figure 48 — Pasted 2026-10-26 at 12.39.21 PM.png</summary>
+<summary>Research figure 048</summary>
 
-![Original research image 48](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.21%20PM.png)
+![Original research figure 048](../results/figures/original-uploads/research-figure-048.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.21%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-048.png)
 
 </details>
 
 <details>
-<summary>Figure 49 — Pasted 2026-10-26 at 12.39.24 PM.png</summary>
+<summary>Research figure 049</summary>
 
-![Original research image 49](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.24%20PM.png)
+![Original research figure 049](../results/figures/original-uploads/research-figure-049.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.24%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-049.png)
 
 </details>
 
 <details>
-<summary>Figure 50 — Pasted 2026-10-26 at 12.39.26 PM.png</summary>
+<summary>Research figure 050</summary>
 
-![Original research image 50](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.26%20PM.png)
+![Original research figure 050](../results/figures/original-uploads/research-figure-050.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.26%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-050.png)
 
 </details>
 
 <details>
-<summary>Figure 51 — Pasted 2026-10-26 at 12.39.27 PM.png</summary>
+<summary>Research figure 051</summary>
 
-![Original research image 51](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.27%20PM.png)
+![Original research figure 051](../results/figures/original-uploads/research-figure-051.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.27%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-051.png)
 
 </details>
 
 <details>
-<summary>Figure 52 — Pasted 2026-10-26 at 12.39.30 PM.png</summary>
+<summary>Research figure 052</summary>
 
-![Original research image 52](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.30%20PM.png)
+![Original research figure 052](../results/figures/original-uploads/research-figure-052.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.30%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-052.png)
 
 </details>
 
 <details>
-<summary>Figure 53 — Pasted 2026-10-26 at 12.39.34 PM.png</summary>
+<summary>Research figure 053</summary>
 
-![Original research image 53](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.34%20PM.png)
+![Original research figure 053](../results/figures/original-uploads/research-figure-053.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.34%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-053.png)
 
 </details>
 
 <details>
-<summary>Figure 54 — Pasted 2026-10-26 at 12.39.37 PM.png</summary>
+<summary>Research figure 054</summary>
 
-![Original research image 54](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.37%20PM.png)
+![Original research figure 054](../results/figures/original-uploads/research-figure-054.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.37%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-054.png)
 
 </details>
 
 <details>
-<summary>Figure 55 — Pasted 2026-10-26 at 12.39.41 PM.png</summary>
+<summary>Research figure 055</summary>
 
-![Original research image 55](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.41%20PM.png)
+![Original research figure 055](../results/figures/original-uploads/research-figure-055.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.41%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-055.png)
 
 </details>
 
 <details>
-<summary>Figure 56 — Pasted 2026-10-26 at 12.39.43 PM.png</summary>
+<summary>Research figure 056</summary>
 
-![Original research image 56](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.43%20PM.png)
+![Original research figure 056](../results/figures/original-uploads/research-figure-056.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.43%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-056.png)
 
 </details>
 
 <details>
-<summary>Figure 57 — Pasted 2026-10-26 at 12.39.44 PM.png</summary>
+<summary>Research figure 057</summary>
 
-![Original research image 57](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.44%20PM.png)
+![Original research figure 057](../results/figures/original-uploads/research-figure-057.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.44%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-057.png)
 
 </details>
 
 <details>
-<summary>Figure 58 — Pasted 2026-10-26 at 12.39.46 PM.png</summary>
+<summary>Research figure 058</summary>
 
-![Original research image 58](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.46%20PM.png)
+![Original research figure 058](../results/figures/original-uploads/research-figure-058.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.46%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-058.png)
 
 </details>
 
 <details>
-<summary>Figure 59 — Pasted 2026-10-26 at 12.39.48 PM.png</summary>
+<summary>Research figure 059</summary>
 
-![Original research image 59](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.48%20PM.png)
+![Original research figure 059](../results/figures/original-uploads/research-figure-059.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.48%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-059.png)
 
 </details>
 
 <details>
-<summary>Figure 60 — Pasted 2026-10-26 at 12.39.50 PM.png</summary>
+<summary>Research figure 060</summary>
 
-![Original research image 60](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.50%20PM.png)
+![Original research figure 060](../results/figures/original-uploads/research-figure-060.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.50%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-060.png)
 
 </details>
 
 <details>
-<summary>Figure 61 — Pasted 2026-10-26 at 12.39.53 PM.png</summary>
+<summary>Research figure 061</summary>
 
-![Original research image 61](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.53%20PM.png)
+![Original research figure 061](../results/figures/original-uploads/research-figure-061.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.53%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-061.png)
 
 </details>
 
 <details>
-<summary>Figure 62 — Pasted 2026-10-26 at 12.39.54 PM.png</summary>
+<summary>Research figure 062</summary>
 
-![Original research image 62](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.54%20PM.png)
+![Original research figure 062](../results/figures/original-uploads/research-figure-062.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.54%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-062.png)
 
 </details>
 
 <details>
-<summary>Figure 63 — Pasted 2026-10-26 at 12.39.56 PM.png</summary>
+<summary>Research figure 063</summary>
 
-![Original research image 63](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.56%20PM.png)
+![Original research figure 063](../results/figures/original-uploads/research-figure-063.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.56%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-063.png)
 
 </details>
 
 <details>
-<summary>Figure 64 — Pasted 2026-10-26 at 12.39.58 PM.png</summary>
+<summary>Research figure 064</summary>
 
-![Original research image 64](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.58%20PM.png)
+![Original research figure 064](../results/figures/original-uploads/research-figure-064.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.39.58%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-064.png)
 
 </details>
 
 <details>
-<summary>Figure 65 — Pasted 2026-10-26 at 12.40.00 PM.png</summary>
+<summary>Research figure 065</summary>
 
-![Original research image 65](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.40.00%20PM.png)
+![Original research figure 065](../results/figures/original-uploads/research-figure-065.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.40.00%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-065.png)
 
 </details>
 
 <details>
-<summary>Figure 66 — Pasted 2026-10-26 at 12.40.02 PM.png</summary>
+<summary>Research figure 066</summary>
 
-![Original research image 66](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.40.02%20PM.png)
+![Original research figure 066](../results/figures/original-uploads/research-figure-066.png)
 
-[Open original PNG](../results/figures/original-uploads/Pasted%202026-10-26%20at%2012.40.02%20PM.png)
+[Open full-resolution PNG](../results/figures/original-uploads/research-figure-066.png)
 
 </details>
 
-## Scientific caption reference
+## Provenance and interpretation
 
-The final presentation associates RLE with slide 10, PCA with slide 11, ESTIMATE and BASE immune scoring with slide 12, treatment-contrast volcano plots with slide 14, p-value distributions with slide 15, and KEGG enrichment with slide 16. Appendix Figures S1–S9 cover further volcano and p-value comparisons. See [presentation figure map](oral-presentation-figures.md), [supplementary plots](supplementary-volcano-gallery.md) and the source dissertation.
-
-**Interpretation:** BASE provides cell-type enrichment scores rather than direct cell fractions. Contrasts with different covariates are model comparisons, not proof of a causal origin of any expression change.
+- The RLE, PCA, ESTIMATE purity, BASE enrichment, limma volcano comparisons, p-value distributions and KEGG figures were supplied by the author as historical thesis outputs.
+- Additional appendix images cover six treatment contrasts and alternative covariate models, including highlighted control genes.
+- The portfolio charts in [`results/figures/`](../results/figures/) are separately redrawn SVG summaries, not replacements for these author-uploaded PNGs.
+- The original images were renamed solely for repository navigation; no new statistical analysis was performed.

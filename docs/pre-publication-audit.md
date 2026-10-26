@@ -38,3 +38,5 @@ This repository preserves a 2025 master's historical bulk-RNA-seq research analy
 - Verify README relative image links and linked references when viewed without authenticated access.
 - Choose a license deliberately; **do not assume that adding a software license also licenses source-study data or third-party reference sets**.
 - Only change Repository visibility after the checks above.
+
+**Update (2026-10-26):** Author-supplied *text representations* of the pathway enrichment and KEGG exports are now preserved at [pathway enrichment / KEGG notes](pathway-enrichment-kegg.md), with raw pasted content under `archive/pathway-enrichment/`. These are not copies of the binary Excel workbooks, and Excel worksheet-level identity and formatting remain unverified.

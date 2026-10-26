@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# =============================================================================
+# HOW TO READ THIS HISTORICAL NOTEBOOK
+# - Original research expressions, object names and model calls are preserved.
+# - Comments clarify the intent; they do not correct or rerun historic analyses.
+# - Scripts are archived RStudio session excerpts, not standalone pipelines.
+# - Full untouched source: archive/original_annotated_code.R.
+# =============================================================================
+
 # -----------------------------------------------------------------------------
 # EDITORIAL NOTE
 # This file is a historical, interactive R research notebook excerpt.
@@ -13,12 +21,12 @@
 # The complete original code is preserved in archive/original_annotated_code.R.
 # -----------------------------------------------------------------------------
 
-#start generate linear model with limma:
+# Fit limma models with treatment, estimated BASE scores and tumour purity.
 cellfrac <- base %>% column_to_rownames("cell_type") %>% as.matrix()
 cellfrac <- t(cellfrac)
 group <- relevel(group, ref = "Vehicle")
 
-## Model1: group + BASE + tumor purity
+## Model 1 — treatment + BASE enrichment + tumour purity
 design_m1 <- model.matrix(~ 0 + group + cellfrac + purity)
 colnames(design_m1) <- make.names(colnames(design_m1))
 colnames(design_m1)
@@ -34,7 +42,7 @@ contr_m1 <- makeContrasts(
   levels = design_m1)
 fit_m1c <- eBayes(contrasts.fit(fit_m1, contr_m1), robust = TRUE)
 
-#log fold change and p-value for each gene in each comparison
+# log fold change and p-value for each gene in each comparison
 res_m1_AntiPD1_vs_Vehicle <- topTable(fit_m1c, coef = "AntiPD1_vs_Vehicle", number = Inf)
 res_m1_EPAT_vs_Vehicle <- topTable(fit_m1c, coef = "EPAT_vs_Vehicle", number = Inf)
 res_m1_Combo_vs_Vehicle <- topTable(fit_m1c, coef = "Combo_vs_Vehicle", number = Inf)
@@ -65,7 +73,7 @@ res_m2_AntiPD1_vs_EPAT <- topTable(fit_m2c, coef = "AntiPD1_vs_EPAT", number = I
 res_m2_Combo_vs_EPAT <- topTable(fit_m2c, coef = "Combo_vs_EPAT", number = Inf)
 res_m2_Combo_vs_AntiPD1 <- topTable(fit_m2c, coef = "Combo_vs_AntiPD1", number = Inf)
 
-#Model3 : group + purity only
+# Model3 : group + purity only
 design_m3 <- model.matrix(~ 0 + group + purity)
 colnames(design_m3) <- make.names(colnames(design_m3))
 colnames(design_m3)
@@ -113,11 +121,11 @@ res_m4_AntiPD1_vs_EPAT <- topTable(fit_m4c, coef = "AntiPD1_vs_EPAT", number = I
 res_m4_Combo_vs_EPAT  <- topTable(fit_m4c, coef = "Combo_vs_EPAT",  number = Inf)
 res_m4_Combo_vs_AntiPD1 <- topTable(fit_m4c, coef = "Combo_vs_AntiPD1", number = Inf)
 
-#Box and whiskers plot from base output
+# Box and whiskers plot from base output
 base_long <- melt(base, id.vars = "cell_type", variable.name = "Sample", value.name = "Score")
 sample_df <- data.frame(Sample = colnames(base)[-1], Group  = group, check.names = FALSE)
 base_long <- merge(base_long, sample_df, by = "Sample")
-#Box & whisker plots with y limit [-2, 2]
+# Box & whisker plots with y limit [-2, 2]
 ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
   geom_boxplot(outlier.size = 0.6) +
   facet_wrap(~ cell_type, scales = "free_y", ncol = 4) +
@@ -129,8 +137,8 @@ ggplot(base_long, aes(x = Group, y = Score, fill = Group)) +
 
 # p-value distribution to compare the same contrast with different model(model1, model2, model3, model4)
 # res_m1_AntiPD1_vs_Vehicle  res_m1_EPAT_vs_Vehicle     res_m1_Combo_vs_Vehicle res_m1_AntiPD1_vs_EPAT     res_m1_Combo_vs_EPAT       res_m1_Combo_vs_AntiPD1
-#all contrast group with model 1, if model 2 swap m1 to m2
-#Example for combination vs vehicle with model1 vs model 4
+# all contrast group with model 1, if model 2 swap m1 to m2
+# Example for combination vs vehicle with model1 vs model 4
 df_p <- data.frame(
   pval = c(res_m1_Combo_vs_Vehicle, res_m4_Combo_vs_Vehicle),
   Model = rep(c("With purity", "Without purity and BASE"),c(length(res_m1_Combo_vs_Vehicle), length(res_m4_Combo_vs_Vehicle))))
@@ -142,7 +150,7 @@ ggplot(df_p, aes(x = pval, fill = Model)) +
   x = "P-value", y = "Count") +
   scale_fill_manual(values = c("steelblue", "tomato"))
 
-#volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs Vehicle
+# volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs Vehicle
 plot_volcano_with <- function(res_1, title_text) {
   res <- res_1
   res$CellType <- rownames(res)
@@ -159,13 +167,13 @@ plot_volcano_with <- function(res_1, title_text) {
     theme_minimal(base_size = 13) +
     theme(legend.position = "none")}
 
-#example: Anti-PD-1 + EPAT vs Vehicle
+# example: Anti-PD-1 + EPAT vs Vehicle
 plot_volcano_with(res_m1_Combo_vs_Vehicle, "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)")
 
-#example:  Anti-PD-1 vs Vehicle
+# example:  Anti-PD-1 vs Vehicle
 plot_volcano_with(res_m1_AntiPD1_vs_Vehicle, "Volcano: Anti-PD-1 vs Vehicle (BASE, with purity)")
 
-#volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs Vehicle as example, highlight positive(yellow) and negative control gene(blue)
+# volcano plot function for genes in that contrast group using model 1 Anti-PD-1 + EPAT vs Vehicle as example, highlight positive(yellow) and negative control gene(blue)
 
 plot_volcano_highlights <- function(
   res_with,
@@ -210,15 +218,15 @@ ylim_vals = c(0, 6)) {
 
   p}
 
-#combination vs vehicle from model 1 with positive and negative control genes previously generated
+# combination vs vehicle from model 1 with positive and negative control genes previously generated
 plot_volcano_highlights(
   res_m1_Combo_vs_Vehicle,
   "Volcano: Anti-PD-1 + EPAT vs Vehicle (BASE, with purity)",
   anti_ids = antiPD1_ids,
   neg_ids  = random_neg32$ensembl_gene_id)
 
-#to look for gene that is over absolute log fold change 0.585 and p-value less than 0.05
-#Anti-PD-1+EPAT vs Vehicle with model 1, sort according to p-value
+# to look for gene that is over absolute log fold change 0.585 and p-value less than 0.05
+# Anti-PD-1+EPAT vs Vehicle with model 1, sort according to p-value
 sig_genes_up <- res_m1_Combo_vs_Vehicle %>%
   subset((logFC > 0.585 | logFC < -0.585) & P.Value < 0.05) %>%
   .[order(.$P.Value), ]

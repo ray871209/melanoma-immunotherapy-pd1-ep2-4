@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# =============================================================================
+# HOW TO READ THIS HISTORICAL NOTEBOOK
+# - Original research expressions, object names and model calls are preserved.
+# - Comments clarify the intent; they do not correct or rerun historic analyses.
+# - Scripts are archived RStudio session excerpts, not standalone pipelines.
+# - Full untouched source: archive/original_annotated_code.R.
+# =============================================================================
+
 # -----------------------------------------------------------------------------
 # EDITORIAL NOTE
 # This file is a historical, interactive R research notebook excerpt.
@@ -13,22 +21,22 @@
 # The complete original code is preserved in archive/original_annotated_code.R.
 # -----------------------------------------------------------------------------
 
-#immune composition
-#install.packages("remotes")
-#remotes::install_github("omnideconv/immunedeconv")
+# Immune deconvolution: exploratory estimates and BASE selection
+# install.packages("remotes")
+# remotes::install_github("omnideconv/immunedeconv")
 library(immunedeconv)
 library(biomaRt)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggExtra)
-#data must be on non-log scale
+# Transform back to linear scale for the deconvolution calls below.
 deconv_data <- 2^human_gene
-#the below three method uses mouse data
+# Historical exploratory deconvolution comparisons; review species and gene ID compatibility.
 quantiseq <- deconvolute(deconv_data, "quantiseq")
 xcell <- deconvolute(deconv_data, "xcell")
 epic <- deconvolute(deconv_data, "epic")
-#correlation uncharacterized cell from quatiseq and tumour purity
+# correlation uncharacterized cell from quatiseq and tumour purity
 uncharacterized <- quantiseq[quantiseq$cell_type == "uncharacterized cell", -1]
 # make it numeric vector
 uncharacterized <- as.numeric(uncharacterized)
@@ -42,7 +50,7 @@ cor_test <- cor.test(uncharacterized, purity, method = "pearson")
 cor_uncell
 cor_test
 
-#however result not good so turn to BASE which uses mice gene symbol:
+# however result not good so turn to BASE which uses mice gene symbol:
 # Connect to Ensembl Mouse
 mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 # Get mapping from Ensembl to MGI
@@ -54,14 +62,14 @@ deconv_data_mouse <- 2^( cpm_data_mgi)
 
 # run mmcp_counter
 mmcp_counter <- deconvolute_mouse(deconv_data_mouse, method = "mmcp_counter")
-#run base
+# run base
 base <- deconvolute_mouse(deconv_data_mouse, method = "base")
 
 # PCA on BASE
 pca_result <- prcomp(t(base), scale. = TRUE)
 pca_data <- as.data.frame(pca_result$x)
 pca_data$Group  <- group
-#day 2 and day 5
+# day 2 and day 5
 pca_data$Day    <- batch_info
 pca_data$Sample <- colnames(base)
 
@@ -79,7 +87,7 @@ pca <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Group, shape = Day)) +
 # Marginal densities (same as before)
 pca_marginal <- ggMarginal(pca, type = "density", groupColour = TRUE, groupFill   = TRUE)
 
-#generate heatmap for base
+# generate heatmap for base
 library(pheatmap)
 library(tibble)
 

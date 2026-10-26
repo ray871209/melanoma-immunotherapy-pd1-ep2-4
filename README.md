@@ -110,6 +110,7 @@ The images below are unmodified author-supplied research files. Their sequential
 ## Explore the research
 
 - [Code navigation guide](research-notebook/README.md)
+- [Research archive audit: original scripts, overlaps and supporting spreadsheets](docs/research-archive-audit.md)
 - [Historical research highlights](docs/results-highlights.md)
 - [Editorial code-review notes](docs/code-review-notes.md)
 - [All 66 original research and appendix images](docs/original-figures-gallery.md)

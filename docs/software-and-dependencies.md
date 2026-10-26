@@ -1,6 +1,6 @@
 # R environment and software versions
 
-This document records an **author-provided R session snapshot** associated with the melanoma immunotherapy research project. It is historical environment metadata, **not a lockfile or a guarantee that every figure can be reproduced by installing these versions**.
+This document records an **author-provided R session snapshot** associated with the melanoma immunotherapy research project, dated approximately **November 2025** based on the author's recollection. It is historical environment metadata, **not a lockfile or a guarantee that every figure can be reproduced by installing these versions**.
 
 ## R and system environment
 
@@ -45,7 +45,7 @@ These package versions were identified from the supplied session snapshot. The *
 
 ## Provenance and reproducibility
 
-- Source: R `sessionInfo()` text exported from the author's research environment and supplied on 26 October 2026. The snapshot itself does not include an execution date, so the software versions are **not claimed to be the exact versions used for every 2025 analysis step**.
+- Source: R `sessionInfo()` text retained by the author and supplied on 26 October 2026. **Approximate session date: November 2025 (author-provided estimate).** The session dump does not independently record its execution date, so this date is approximate rather than verified, and the versions are not necessarily those used for every analysis step.
 - The project combines original code excerpts from interactive RStudio sessions, including exploratory analyses and historical dependencies. Running the four notebook files independently is **not guaranteed**.
 - The public data source is [GEO GSE160788](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160788). Files derived from private paths or installed local packages have not been redistributed.
 - DAVID and KEGG were also used for pathway interpretation, but this R session does **not** record their website/database versions.

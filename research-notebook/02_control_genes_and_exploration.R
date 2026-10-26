@@ -5,6 +5,14 @@
 # they may depend on objects created in other sections or prior sessions.
 # They are NOT presented as independently executable clean-session scripts.
 
+# =============================================================================
+# HOW TO READ THIS HISTORICAL NOTEBOOK
+# - Original research expressions, object names and model calls are preserved.
+# - Comments clarify the intent; they do not correct or rerun historic analyses.
+# - Scripts are archived RStudio session excerpts, not standalone pipelines.
+# - Full untouched source: archive/original_annotated_code.R.
+# =============================================================================
+
 # -----------------------------------------------------------------------------
 # EDITORIAL NOTE
 # This file is a historical, interactive R research notebook excerpt.
@@ -13,10 +21,10 @@
 # The complete original code is preserved in archive/original_annotated_code.R.
 # -----------------------------------------------------------------------------
 
-##Selecting Negative Control Genes
+## Negative controls: housekeeping gene selection
 housekeeping <- kv <- read.delim("HOUNKPE_HOUSEKEEPING_GENES.v2024.1.Mm.tsv", sep      = "\t", header   = FALSE,)
 
-#check negative control list and their unique id
+# check negative control list and their unique id
 housekeeping_list <- housekeeping$V2[kv$V1 == "SOURCE_MEMBERS"]
 housekeeping_list
 housekeeping_genes <- strsplit(housekeeping_list, ",")
@@ -25,11 +33,11 @@ neg_control <- conversion[conversion$external_gene_name %in% housekeeping_genes,
 length(unique(neg_control$ensembl_gene_id))
 
 matrix_cpm_tmm <- as.matrix(cpm_data)
-#look for bottom 15% of gene in variance - 2238 genes
+# look for bottom 15% of gene in variance - 2238 genes
 stable_gene <- names(sort(rowVars(matrix_cpm_tmm)))[1:2238]
 new_neg_control <- intersect(neg_control$ensembl_gene_id, stable_gene)
 ctl <- rownames(matrix_update_cpm_tmm) %in% new_neg_control
-#test on RUVg where it accept negative control
+# test on RUVg where it accept negative control
 ruv <- RUVg(matrix_update_cpm_tmm, ctl, k = 3, isLog = TRUE)
 W1 <- ruv$W[,1]
 W2 <- ruv$W[,2]
@@ -51,7 +59,7 @@ cor(ruv_3$W[,1], update_tumor_purity)
 cor(ruv_3$W[,2], update_tumor_purity)
 cor(ruv_3$W[,3], update_tumor_purity)
 
-#try bottom 20% and negative control intesect
+# try bottom 20% and negative control intesect
 stable_gene_2 <- names(sort(rowVars(matrix_cpm_tmm)))[1:2984]
 new_neg_control_2 <- intersect(neg_control$ensembl_gene_id, stable_gene)
 ctl_2 <- rownames(matrix_update_cpm_tmm) %in% new_neg_control_2
@@ -65,7 +73,7 @@ cor(W_3, update_tumor_purity)
 
 #############################################
 # RUV-PRPS
-#make a list of pseudo replicate list
+# make a list of pseudo replicate list
 pseudo_list_prps <- list(
   d2_Combine_high = c("AM6_8.2_S33","AM6_8.3_S38"),
   d2_Combine_low = c("AM6_8.1_S7","AM6_8.4_S9","AM6_8.5_S14"),
@@ -143,7 +151,7 @@ EPAT_gene_t <- as.data.frame(t(EPAT_gene=))
 EPAT_gene_t$Group <- group
 EPAT_long <- melt(EPAT_gene_t, id.vars = "Group", variable.name = "Gene", value.name = "Expression")
 
-#boxplots in one page
+# boxplots in one page
 ggplot(EPAT_long, aes(x = Group, y = Expression, fill = Group)) +
   geom_boxplot(outlier.size = 0.5) +
   facet_wrap(~ Gene, scales = "free_y", ncol = 4) +
@@ -362,7 +370,7 @@ print(results[results$P_value < 0.05, ])
 # EPAT p-values
 e_pvals <- c(0.08920955,0.05242590,0.07525601,0.91179718,0.10512243,0.02323064,0.39304813,0.16549395,0.91179718,0.06301284,0.14314014,0.07525601,0.57874169,0.14314014,0.12300548,0.52884886,0.10512243,0.05242590,0.48125095,0.31499924,0.79593626,0.73936435,0.04325705,0.05242590,0.97051246,0.85342831,0.12300548,0.91179718,0.35268137,0.91179718,0.31499924,0.03546299)
 
-#KS test on p-value
+# KS test on p-value
 # KS test vs Uniform(0,1)
 ks_epat <- ks.test(e_pvals, "punif", 0, 1)
 ks_apd1 <- ks.test(a_pvals, "punif", 0, 1)
